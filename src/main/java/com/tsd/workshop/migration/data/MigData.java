@@ -1,7 +1,6 @@
 package com.tsd.workshop.migration.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -33,7 +32,7 @@ public class MigData {
     @Column("calculated_total_price")
     private BigDecimal calculatedTotalPrice;
     @Column("migrated_ind")
-    private Character migratedIndicator;
+    private Boolean migratedIndicator = Boolean.FALSE;
     @Column("completion_date")
     private LocalDate completionDate;
 
@@ -117,11 +116,11 @@ public class MigData {
         this.calculatedTotalPrice = calculatedTotalPrice;
     }
 
-    public Character getMigratedIndicator() {
+    public Boolean getMigratedIndicator() {
         return migratedIndicator;
     }
 
-    public void setMigratedIndicator(Character migratedIndicator) {
+    public void setMigratedIndicator(Boolean migratedIndicator) {
         this.migratedIndicator = migratedIndicator;
     }
 
