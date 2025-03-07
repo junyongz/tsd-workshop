@@ -1,0 +1,35 @@
+package com.tsd.workshop.vehicle.web;
+
+import com.tsd.workshop.vehicle.VehicleService;
+import com.tsd.workshop.vehicle.data.Vehicle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+@RestController
+@RequestMapping("/vehicles")
+public class VehicleController {
+    @Autowired
+    private VehicleService vehicleService;
+
+    @PostMapping
+    public Mono<Vehicle> createVehicle(@RequestBody Vehicle vehicle) {
+        return vehicleService.saveVehicle(vehicle);
+    }
+
+    @GetMapping("/{id}")
+    public Mono<Vehicle> getVehicle(@PathVariable Long id) {
+        return vehicleService.findById(id);
+    }
+
+    @GetMapping
+    public Flux<Vehicle> getAllVehicles() {
+        return vehicleService.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public Mono<Void> deleteVehicle(@PathVariable Long id) {
+        return vehicleService.deleteById(id);
+    }
+}
