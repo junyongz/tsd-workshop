@@ -16,7 +16,7 @@
 
 To copy bundled SPA over here (after `npm run build`)
 
-1. mkdir src/main/resources/public/
-2. cp -R ../tsd-workshop-spa/build/* ./src/main/resources/public/
-3. ls -lrt src/main/resources/public/
-4. mvn package
+1. rm -rf src/main/resources/public/
+2. mkdir src/main/resources/public/
+3. cp -R ../tsd-workshop-spa/build/* ./src/main/resources/public/
+4. mvn clean package
