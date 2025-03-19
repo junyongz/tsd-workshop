@@ -25,6 +25,7 @@ public class MigSparePartController {
 
     @GetMapping
     public Flux<MigSparePart> getAllMigSpareParts() {
+        // TODO: not to give remaining is 0 one
         return migSparePartService.findAll();
     }
 

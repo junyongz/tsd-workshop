@@ -35,6 +35,10 @@ public class MigData {
     private Boolean migratedIndicator = Boolean.FALSE;
     @Column("completion_date")
     private LocalDate completionDate;
+    @Column("order_id")
+    private Long orderId; // link to the order for the spare parts
+    @Column("supplier_id")
+    private Long supplierId; // link to the supplier of the spare parts
 
     public Long getIndex() {
         return index;
@@ -130,6 +134,22 @@ public class MigData {
 
     public void setCompletionDate(LocalDate completionDate) {
         this.completionDate = completionDate;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public Long getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Long supplierId) {
+        this.supplierId = supplierId;
     }
 
     @JsonIgnore

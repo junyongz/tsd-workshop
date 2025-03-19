@@ -3,25 +3,37 @@ package com.tsd.workshop.migration.spareparts.data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.math.BigDecimal;
+
 @Table("mig_spare_parts")
 public class MigSparePart {
     @Id
     private Long id;
+    private String itemCode;
     private String partName;
     private String unit;
-    private Double unitPrice;
+    private BigDecimal unitPrice;
     private Boolean addAllowed;
+    private Long supplierId;
+    private Long orderId;
 
     // Default constructor
     public MigSparePart() {}
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getItemCode() {
+        return itemCode;
+    }
+
+    public void setItemCode(String itemCode) {
+        this.itemCode = itemCode;
     }
 
     public String getPartName() {
@@ -40,11 +52,11 @@ public class MigSparePart {
         this.unit = unit;
     }
 
-    public Double getUnitPrice() {
+    public BigDecimal getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(Double unitPrice) {
+    public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }
 
@@ -54,5 +66,21 @@ public class MigSparePart {
 
     public void setAddAllowed(Boolean addAllowed) {
         this.addAllowed = addAllowed;
+    }
+
+    public Long getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Long supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 }
