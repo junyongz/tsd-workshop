@@ -24,7 +24,6 @@ public class Vehicle {
         this.trailerNo = trailerNo;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

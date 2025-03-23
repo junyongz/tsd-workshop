@@ -1,6 +1,7 @@
 package com.tsd.workshop.migration.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -155,5 +156,22 @@ public class MigData {
     @JsonIgnore
     public boolean isCompleted() {
         return this.completionDate != null;
+    }
+
+    public SparePartUsage toSparePartUsage() {
+        SparePartUsage spu = new SparePartUsage();
+        spu.setQuantity(this.quantity);
+        spu.setServiceId(this.index);
+        spu.setVehicleNo(this.vehicleNo);
+        spu.setOrderId(this.orderId);
+        spu.setUsageDate(this.creationDate);
+        return spu;
+    }
+
+    public void afterRecordUsage(SparePartUsage spu) {
+        this.quantity = spu.getQuantity();
+        this.vehicleNo = spu.getVehicleNo();
+        this.creationDate= spu.getUsageDate();
+        this.totalPrice = this.unitPrice.multiply(new BigDecimal(this.quantity));
     }
 }

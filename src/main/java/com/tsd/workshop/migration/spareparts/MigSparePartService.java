@@ -3,13 +3,11 @@ package com.tsd.workshop.migration.spareparts;
 import com.tsd.workshop.migration.spareparts.data.MigSparePart;
 import com.tsd.workshop.migration.spareparts.data.MigSparePartRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
-import com.tsd.workshop.migration.suppliers.data.SupplierSparePartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,10 +34,14 @@ public class MigSparePartService {
     }
 
     public Flux<MigSparePart> findAll() {
-        return migSparePartRepository.findAll();
+        return migSparePartRepository.findAllAvailableSpareParts();
     }
 
     public Mono<Void> deleteById(Long id) {
         return migSparePartRepository.deleteById(id);
+    }
+
+    public Mono<Void> deleteByOrderId(Long orderId) {
+        return migSparePartRepository.deleteByOrderId(orderId);
     }
 }

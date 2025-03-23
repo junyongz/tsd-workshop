@@ -6,6 +6,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -15,6 +16,13 @@ public class MigDataJdbcRepository {
 
     @Autowired
     private DatabaseClient databaseClient;
+
+    public Flux<Long> findServiceIdsByOrderId(Long orderId) {
+        return databaseClient.sql("select index from mig_data where order_id = :orderId")
+                .bind(0, orderId)
+                .map(row -> (Long) row.get("index"))
+                .all();
+    }
 
     @Transactional
     public Mono<Long> moveToDeletedTable(Long id) {

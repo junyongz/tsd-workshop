@@ -1,5 +1,6 @@
 package com.tsd.workshop.migration.suppliers.data;
 
+import com.tsd.workshop.migration.data.MigData;
 import com.tsd.workshop.migration.spareparts.data.MigSparePart;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
@@ -142,6 +143,16 @@ public class SupplierSparePart {
         sp.setUnit(this.unit);
         sp.setUnitPrice(this.unitPrice);
         return sp;
+    }
+
+    public MigData toMigData() {
+        MigData md = new MigData();
+        md.setItemDescription(this.partName);
+        md.setUnit(this.unit);
+        md.setUnitPrice(this.unitPrice);
+        md.setSupplierId(this.supplierId);
+        md.setOrderId(this.id);
+        return md;
     }
 
     @Override

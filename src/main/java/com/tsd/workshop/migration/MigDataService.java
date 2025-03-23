@@ -4,7 +4,6 @@ import com.tsd.workshop.migration.data.MigData;
 import com.tsd.workshop.migration.data.MigDataJdbcRepository;
 import com.tsd.workshop.migration.data.MigDataRepository;
 import com.tsd.workshop.transaction.utilization.SparePartUsageService;
-import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -36,6 +35,16 @@ public class MigDataService {
     }
 
     @Transactional
+    public Mono<Long> deleteByOrderId(Long orderId) {
+        // remove from spare_part_usage too
+        return migDataJdbcRepository.findServiceIdsByOrderId(orderId)
+                .flatMap(id ->  migDataJdbcRepository.moveToDeletedTable(id)
+                        .flatMap(count -> sparePartUsageService.deleteByServiceId(id)
+                                .thenReturn(count))
+                ).reduce(Long::sum);
+    }
+
+    @Transactional
     public Mono<Long> deleteById(Long id) {
         // remove from spare_part_usage too
         return migDataJdbcRepository.moveToDeletedTable(id)
@@ -51,15 +60,11 @@ public class MigDataService {
         return migDataRepository.saveAll(transactions)
                 .collectList()
                 .flatMapMany(mds ->
-                    sparePartUsageService.saveAllSparePartUsages(mds.stream().map(md -> {
-                        SparePartUsage spu = new SparePartUsage();
-                        spu.setQuantity(md.getQuantity());
-                        spu.setServiceId(md.getIndex());
-                        spu.setVehicleNo(md.getVehicleNo());
-                        spu.setOrderId(md.getSupplierId());
-                        spu.setUsageDate(md.getCreationDate());
-                        return spu;
-                    }).toList()).thenMany(Flux.fromIterable(mds))
+                    sparePartUsageService.saveAllSparePartUsages(
+                            mds.stream()
+                                    .map(MigData::toSparePartUsage)
+                                    .toList())
+                            .thenMany(Flux.fromIterable(mds))
                 );
     }
 }

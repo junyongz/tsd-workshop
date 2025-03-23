@@ -2,6 +2,7 @@ package com.tsd.workshop.transaction.web;
 
 import com.tsd.workshop.migration.data.MigData;
 import com.tsd.workshop.migration.MigDataService;
+import com.tsd.workshop.transaction.utilization.SparePartUsageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -17,6 +18,9 @@ public class TransactionController {
 
     @Autowired
     private MigDataService migDataService;
+
+    @Autowired
+    private SparePartUsageService sparePartUsageService;
 
     @GetMapping("/{id}")
     public Mono<MigData> getSingle(@PathVariable Long id) {
@@ -45,6 +49,7 @@ public class TransactionController {
             transactionsToSave.add(migData);
         }
 
-        return migDataService.saveAll(transactionsToSave);
+        return sparePartUsageService.validateSparePartUsageByQuantity(transactions)
+                .flatMapMany(result -> migDataService.saveAll(transactionsToSave));
     }
 }

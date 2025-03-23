@@ -21,4 +21,5 @@ public class WebConfig {
 
         return new CorsWebFilter(source);
     }
+
 }
