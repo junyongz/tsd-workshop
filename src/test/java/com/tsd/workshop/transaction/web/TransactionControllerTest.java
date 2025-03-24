@@ -2,6 +2,7 @@ package com.tsd.workshop.transaction.web;
 
 import com.tsd.workshop.migration.MigDataService;
 import com.tsd.workshop.migration.data.MigData;
+import com.tsd.workshop.transaction.utilization.SparePartUsageService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -10,9 +11,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,13 +26,23 @@ class TransactionControllerTest {
     @Test
     void saveAllTransactions() {
         MigDataService migDataService = mock(MigDataService.class);
-        ArgumentCaptor<Collection<MigData>> migDatasArgCaptor = ArgumentCaptor.forClass(Collection.class);
+        ArgumentCaptor<List<MigData>> migDatasArgCaptor = ArgumentCaptor.forClass(List.class);
         when(migDataService.saveAll(migDatasArgCaptor.capture())).then(args -> {
             List<MigData> migDatas = args.getArgument(0);
             migDatas.get(0).setIndex(1000L);
             migDatas.get(1).setIndex(1001L);
             return Flux.just(migDatas.get(0), migDatas.get(1));
         });
+
+        SparePartUsageService sparePartUsageService = mock(SparePartUsageService.class);
+        when(sparePartUsageService.validateSparePartUsageByQuantity(migDatasArgCaptor.capture())).thenReturn(Mono.just(true));
+
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+        ctx.register(DelegatingWebFluxConfiguration.class);
+        ctx.register(TransactionController.class);
+        ctx.getDefaultListableBeanFactory().registerSingleton("migDataService", migDataService );
+        ctx.getDefaultListableBeanFactory().registerSingleton("sparePartUsageService", sparePartUsageService );
+        ctx.refresh();
 
         MigData md1 = new MigData();
         md1.setItemDescription("Spare part 1");
@@ -46,12 +57,6 @@ class TransactionControllerTest {
         md2.setUnit("litre");
         md2.setUnitPrice(new BigDecimal("10.00"));
         md2.setTotalPrice(new BigDecimal("200.00"));
-
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-        ctx.register(DelegatingWebFluxConfiguration.class);
-        ctx.register(TransactionController.class);
-        ctx.getDefaultListableBeanFactory().registerSingleton("migDataService", migDataService );
-        ctx.refresh();
 
         WebTestClient webTestClient = WebTestClient
                 .bindToApplicationContext(ctx)
@@ -77,13 +82,23 @@ class TransactionControllerTest {
     @Test
     void completeTransaction() {
         MigDataService migDataService = mock(MigDataService.class);
-        ArgumentCaptor<Collection<MigData>> migDatasArgCaptor = ArgumentCaptor.forClass(Collection.class);
+        ArgumentCaptor<List<MigData>> migDatasArgCaptor = ArgumentCaptor.forClass(List.class);
         when(migDataService.saveAll(migDatasArgCaptor.capture())).then(args -> {
             List<MigData> migDatas = args.getArgument(0);
             migDatas.get(0).setIndex(1000L);
             migDatas.get(1).setIndex(1001L);
             return Flux.just(migDatas.get(0), migDatas.get(1));
         });
+
+        SparePartUsageService sparePartUsageService = mock(SparePartUsageService.class);
+        when(sparePartUsageService.validateSparePartUsageByQuantity(migDatasArgCaptor.capture())).thenReturn(Mono.just(true));
+
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+        ctx.register(DelegatingWebFluxConfiguration.class);
+        ctx.register(TransactionController.class);
+        ctx.getDefaultListableBeanFactory().registerSingleton("migDataService", migDataService );
+        ctx.getDefaultListableBeanFactory().registerSingleton("sparePartUsageService", sparePartUsageService );
+        ctx.refresh();
 
         MigData md1 = new MigData();
         md1.setItemDescription("Spare part 1");
@@ -98,12 +113,6 @@ class TransactionControllerTest {
         md2.setUnit("litre");
         md2.setUnitPrice(new BigDecimal("10.00"));
         md2.setTotalPrice(new BigDecimal("200.00"));
-
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-        ctx.register(DelegatingWebFluxConfiguration.class);
-        ctx.register(TransactionController.class);
-        ctx.getDefaultListableBeanFactory().registerSingleton("migDataService", migDataService );
-        ctx.refresh();
 
         WebTestClient webTestClient = WebTestClient
                 .bindToApplicationContext(ctx)
@@ -120,4 +129,6 @@ class TransactionControllerTest {
 
         ctx.close();
     }
+
+    // TODO add where validate failed
 }
