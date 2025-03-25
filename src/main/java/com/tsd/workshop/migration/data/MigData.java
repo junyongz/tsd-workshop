@@ -22,6 +22,8 @@ public class MigData {
     private LocalDate creationDate;
     @Column("item_description")
     private String itemDescription;
+    @Column("part_name")
+    private String partName;
     @Column("quantity")
     private Integer quantity;
     @Column("unit")
@@ -79,6 +81,14 @@ public class MigData {
 
     public void setItemDescription(String itemDescription) {
         this.itemDescription = itemDescription;
+    }
+
+    public String getPartName() {
+        return partName;
+    }
+
+    public void setPartName(String partName) {
+        this.partName = partName;
     }
 
     public Integer getQuantity() {
