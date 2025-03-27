@@ -3,8 +3,10 @@ package com.tsd.workshop.transaction.utilization.data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+@Transactional(readOnly = true)
 @Repository
 public class SparePartUsageR2dbcRepository {
 

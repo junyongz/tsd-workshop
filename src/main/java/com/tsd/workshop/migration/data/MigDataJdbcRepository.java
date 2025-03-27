@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
+@Transactional(readOnly = true)
 @Service
 public class MigDataJdbcRepository {
 

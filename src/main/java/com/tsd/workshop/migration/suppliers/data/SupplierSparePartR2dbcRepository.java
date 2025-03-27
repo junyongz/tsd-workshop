@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.NumberUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.util.List;
 
+@Transactional(readOnly = true)
 @Repository
 public class SupplierSparePartR2dbcRepository {
 
@@ -38,6 +40,7 @@ public class SupplierSparePartR2dbcRepository {
                 .first();
     }
 
+    @Transactional
     public Mono<Long> moveToDeletedTable(Long orderId) {
         // TODO duplicate code with deletion of mig_data
         return databaseClient.sql("insert into deleted_mig_supplier_spare_parts (select * from mig_supplier_spare_parts where id = :id)")

@@ -44,7 +44,9 @@ public class SupplierSparePartService {
     }
 
     public Flux<SupplierSparePart> findAll() {
-        return supplierSparePartRepository.findAll(Sort.by(Sort.Order.desc("invoiceDate")));
+        return supplierSparePartRepository.findAll(Sort.by(
+                Sort.Order.desc("invoiceDate"),
+                Sort.Order.desc("deliveryOrderNo")));
     }
 
     @Transactional
