@@ -23,7 +23,7 @@ public class TablesTransactionsR2dbcRepository {
                     select 'mig_spare_parts' as table_name, MAX(xmin::text::bigint) AS last_trx_id from mig_spare_parts
                     union
                     select 'spare_part_usages' as table_name, MAX(xmin::text::bigint) AS last_trx_id from spare_part_usages
-                    """)
+                   """)
                 .map(row -> new TableTransaction((String)row.get("table_name"), row.get("last_trx_id", Long.class)))
                 .all();
     }
