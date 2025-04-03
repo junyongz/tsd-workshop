@@ -34,8 +34,7 @@ public class SupplierSparePartService {
                     .saveAll(supplierSpareParts)
                     .collectList()
                     .flatMapMany(sss ->
-                        migSparePartService.saveMigSparePartsForNewOrder(sss)
-                                .thenMany(Flux.fromIterable(sss))
+                        migSparePartService.smartSaveMigSpareParts(sss).thenMany(Flux.fromIterable(sss))
                     );
     }
 

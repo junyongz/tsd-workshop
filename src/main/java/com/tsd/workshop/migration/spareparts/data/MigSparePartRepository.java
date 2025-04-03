@@ -24,4 +24,6 @@ public interface MigSparePartRepository extends R2dbcRepository<MigSparePart, Lo
     Flux<MigSparePart> findAllAvailableSpareParts();
 
     Mono<Void> deleteByOrderId(Long orderId);
+
+    Mono<MigSparePart> findBySupplierIdAndOrderId(Long supplierId, Long orderId);
 }

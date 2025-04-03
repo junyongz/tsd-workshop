@@ -145,6 +145,16 @@ public class SupplierSparePart {
         return sp;
     }
 
+    public void saveInto(MigSparePart sp) {
+        sp.setSupplierId(this.supplierId);
+        sp.setOrderId(this.id);
+        sp.setItemCode(this.itemCode);
+        sp.setPartName(this.partName);
+        sp.setAddAllowed(true);
+        sp.setUnit(this.unit);
+        sp.setUnitPrice(this.unitPrice);
+    }
+
     public MigData toMigData() {
         MigData md = new MigData();
         md.setItemDescription(this.partName);

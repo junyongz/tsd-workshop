@@ -15,6 +15,7 @@ public class SupplierSparePartController {
     @Autowired
     private SupplierSparePartService supplierSparePartService;
 
+    // TODO validate any quantity changed after use, not suppose to anymore
     @PostMapping
     public Flux<SupplierSparePart> createSupplierSpareParts(@RequestBody List<SupplierSparePart> supplierSparePart) {
         return supplierSparePartService.saveSupplierSpareParts(supplierSparePart);

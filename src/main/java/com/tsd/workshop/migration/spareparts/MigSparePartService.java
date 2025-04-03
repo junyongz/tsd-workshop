@@ -5,11 +5,11 @@ import com.tsd.workshop.migration.spareparts.data.MigSparePartRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MigSparePartService {
@@ -17,12 +17,16 @@ public class MigSparePartService {
     @Autowired
     private MigSparePartRepository migSparePartRepository;
 
-    public Flux<MigSparePart> saveMigSparePartsForNewOrder(List<SupplierSparePart> supplierSpareParts) {
-        return migSparePartRepository.saveAll(
-                supplierSpareParts.stream()
-                        .map(SupplierSparePart::toSparePart)
-                        .collect(Collectors.toList())
-        );
+    @Transactional
+    public Flux<MigSparePart> smartSaveMigSpareParts(List<SupplierSparePart> supplierSpareParts) {
+        return Flux.fromIterable(supplierSpareParts)
+                        .flatMap(ssp ->
+                                migSparePartRepository.findBySupplierIdAndOrderId(ssp.getSupplierId(), ssp.getId())
+                                    .flatMap(msp -> {
+                                        ssp.saveInto(msp);
+                                        return migSparePartRepository.save(msp);
+                                    }).switchIfEmpty(migSparePartRepository.save(ssp.toSparePart()))
+                        ).flatMap(Flux::just);
     }
 
     public Mono<MigSparePart> saveMigSparePart(MigSparePart migSparePart) {
