@@ -2,6 +2,7 @@ package com.tsd.workshop.transaction.utilization;
 
 import com.tsd.workshop.migration.data.MigData;
 import com.tsd.workshop.migration.data.MigDataRepository;
+import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartRepository;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
@@ -73,7 +74,27 @@ public class SparePartUsageService {
         return sparePartUsageRepository.saveAll(sparePartUsages);
     }
 
-    public Mono<Boolean> validateSparePartUsageByQuantity(List<MigData> migData) {
+    /**
+     * To validate whether any already-created spare part been used, so not to mess up the quantity
+     * @param supplierSpareParts already-created spare parts
+     * @return whether it has been used for any created spare part
+     */
+    public Flux<Boolean> validateSparePartUsageQuantityForEditing(List<SupplierSparePart> supplierSpareParts) {
+        if (supplierSpareParts.isEmpty()) {
+            return Flux.just(true);
+        }
+
+        return Flux.fromIterable(supplierSpareParts)
+                .flatMap(ssp -> sparePartUsageR2dbcRepository.usageByOrderId(ssp.getId())
+                        .map(usage -> {
+                            if (usage > 0) {
+                                throw new QuantityNotMatchedException(ssp, usage);
+                            }
+                            return true;
+                        }));
+    }
+
+    public Flux<Boolean> validateSparePartUsageByQuantity(List<MigData> migData) {
         Map<Long, Integer> quantityByOrderId = migData.stream().collect(
                 Collectors.groupingBy(
                         MigData::getOrderId,
@@ -91,8 +112,6 @@ public class SparePartUsageService {
                                                 throw new QuantityOverflowException(quantity, orderQuantity);
                                             }
                                             return true;
-                                        })))
-                .map(Function.identity())
-                .next();
+                                        })));
     }
 }

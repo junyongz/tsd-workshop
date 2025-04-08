@@ -50,6 +50,7 @@ public class TransactionController {
         }
 
         return sparePartUsageService.validateSparePartUsageByQuantity(transactions)
+                .all(Boolean.TRUE::equals)
                 .flatMapMany(result -> migDataService.saveAll(transactionsToSave));
     }
 }

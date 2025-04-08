@@ -11,7 +11,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,7 +34,7 @@ class TransactionControllerTest {
         });
 
         SparePartUsageService sparePartUsageService = mock(SparePartUsageService.class);
-        when(sparePartUsageService.validateSparePartUsageByQuantity(migDatasArgCaptor.capture())).thenReturn(Mono.just(true));
+        when(sparePartUsageService.validateSparePartUsageByQuantity(migDatasArgCaptor.capture())).thenReturn(Flux.just(true, true));
 
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
         ctx.register(DelegatingWebFluxConfiguration.class);
@@ -91,7 +90,7 @@ class TransactionControllerTest {
         });
 
         SparePartUsageService sparePartUsageService = mock(SparePartUsageService.class);
-        when(sparePartUsageService.validateSparePartUsageByQuantity(migDatasArgCaptor.capture())).thenReturn(Mono.just(true));
+        when(sparePartUsageService.validateSparePartUsageByQuantity(migDatasArgCaptor.capture())).thenReturn(Flux.just(true, true));
 
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
         ctx.register(DelegatingWebFluxConfiguration.class);

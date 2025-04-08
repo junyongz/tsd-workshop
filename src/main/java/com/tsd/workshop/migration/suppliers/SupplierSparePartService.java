@@ -50,7 +50,6 @@ public class SupplierSparePartService {
 
     @Transactional
     public Mono<Void> deleteById(Long id) {
-        // TODO to delete related service that using this order as well, and mig_spare_parts too
         return supplierSparePartR2dbcRepository.moveToDeletedTable(id)
                 .flatMap(count -> migDataService.deleteByOrderId(id))
                 .flatMap(count -> migSparePartService.deleteByOrderId(id));
