@@ -52,6 +52,7 @@ public class SupplierSparePartService {
     public Mono<Void> deleteById(Long id) {
         return supplierSparePartR2dbcRepository.moveToDeletedTable(id)
                 .flatMap(count -> migDataService.deleteByOrderId(id))
+                .defaultIfEmpty(0L)
                 .flatMap(count -> migSparePartService.deleteByOrderId(id));
     }
 }

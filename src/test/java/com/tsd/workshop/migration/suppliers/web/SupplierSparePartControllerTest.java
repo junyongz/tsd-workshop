@@ -124,10 +124,11 @@ public class SupplierSparePartControllerTest {
         ArgumentCaptor<List<SupplierSparePart>> sspEditingCaptor = ArgumentCaptor.forClass(List.class);
         SparePartUsageService sparePartUsageService = mock(SparePartUsageService.class);
         when(sparePartUsageService.validateSparePartUsageQuantityForEditing(sspEditingCaptor.capture())).thenReturn(
-                Flux.just(true)
-                        .concatWith(Flux.error(new IllegalArgumentException("failed"))));
+                Flux.create(emitter -> {
+                    emitter.next(true);
+                    emitter.error(new IllegalArgumentException("failed"));
+                }));
 
-        ArgumentCaptor<List<SupplierSparePart>> sspCaptor = ArgumentCaptor.forClass(List.class);
         SupplierSparePartService supplierSparePartService = mock(SupplierSparePartService.class);
 
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
