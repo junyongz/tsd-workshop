@@ -4,7 +4,8 @@ public enum Chassis implements Subsystem {
     FRAME("Structural backbone supporting all components."),
     SUSPENSION_SYSTEM("Absorbs shocks and maintains stability."),
     WHEELS_AND_TIRES("Provide traction and support the load."),
-    FIFTH_WHEEL_COUPLING("Connects the tractor to the trailer.");
+    FIFTH_WHEEL_COUPLING("Connects the tractor to the trailer."),
+    MUDGUARD_AND_MUDFLAP("Shields wheels to prevent debris spray.");
 
     private final String description;
 

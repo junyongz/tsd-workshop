@@ -1,6 +1,5 @@
 package com.tsd.workshop.transaction.utilization.web;
 
-import com.tsd.workshop.migration.data.MigData;
 import com.tsd.workshop.transaction.utilization.SparePartUsageService;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import org.springframework.beans.factory.annotation.Autowired;
