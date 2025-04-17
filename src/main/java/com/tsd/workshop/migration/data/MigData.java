@@ -12,36 +12,23 @@ import java.time.LocalDate;
 @Table("mig_data")
 public class MigData {
     @Id
-    @Column("index")
     private Long index;
-    @Column("sheet_name")
     private String sheetName;
-    @Column("vehicle_no")
     private String vehicleNo;
-    @Column("creation_date")
     private LocalDate creationDate;
-    @Column("item_description")
     private String itemDescription;
-    @Column("part_name")
     private String partName;
-    @Column("quantity")
     private Integer quantity;
-    @Column("unit")
     private String unit;
-    @Column("unit_price")
     private BigDecimal unitPrice;
-    @Column("total_price")
     private BigDecimal totalPrice;
-    @Column("calculated_total_price")
     private BigDecimal calculatedTotalPrice;
     @Column("migrated_ind")
     private Boolean migratedIndicator = Boolean.FALSE;
-    @Column("completion_date")
     private LocalDate completionDate;
-    @Column("order_id")
     private Long orderId; // link to the order for the spare parts
-    @Column("supplier_id")
     private Long supplierId; // link to the supplier of the spare parts
+    private Long serviceId;
 
     public Long getIndex() {
         return index;
@@ -161,6 +148,14 @@ public class MigData {
 
     public void setSupplierId(Long supplierId) {
         this.supplierId = supplierId;
+    }
+
+    public Long getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(Long serviceId) {
+        this.serviceId = serviceId;
     }
 
     @JsonIgnore

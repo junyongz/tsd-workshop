@@ -5,6 +5,9 @@ import com.tsd.workshop.vehicle.Subsystems;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.math.BigDecimal;
+import java.time.Duration;
+
 
 // TODO to add priority or difficulty, dependencies
 @Table("workshop_task")
@@ -13,16 +16,18 @@ public class Task {
     @Id
     private Long id;
 
-    private Subsystems category;
+    private Subsystems subsystem;
 
-    private Subsystem subCategory;
+    private Subsystem component;
 
     private TaskType taskType;
 
-    // TODO should it point to spare part table?
+    // TODO point to the spare part of component
     private String sparePart;
 
     private String remarks;
 
+    private BigDecimal unitPrice;
 
+    private Duration estimatedDuration;
 }

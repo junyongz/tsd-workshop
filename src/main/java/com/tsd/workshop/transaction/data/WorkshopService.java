@@ -1,8 +1,11 @@
 package com.tsd.workshop.transaction.data;
 
+import com.tsd.workshop.migration.data.MigData;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import com.tsd.workshop.workmanship.data.WorkmanshipTask;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
@@ -16,13 +19,103 @@ public class WorkshopService {
 
     private Long vehicleId;
 
+    private String vehicleNo;
+
     private LocalDate startDate;
 
     private LocalDate completionDate;
 
+    private Integer mileageKm;
+
+    @CreatedDate
     private LocalDate creationDate;
 
+    @ReadOnlyProperty
     private List<WorkmanshipTask> tasks;
 
+    @ReadOnlyProperty
     private List<SparePartUsage> sparePartUsages;
+
+    @ReadOnlyProperty
+    private List<MigData> migratedHandWrittenSpareParts;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getVehicleId() {
+        return vehicleId;
+    }
+
+    public void setVehicleId(Long vehicleId) {
+        this.vehicleId = vehicleId;
+    }
+
+    public String getVehicleNo() {
+        return vehicleNo;
+    }
+
+    public void setVehicleNo(String vehicleNo) {
+        this.vehicleNo = vehicleNo;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getCompletionDate() {
+        return completionDate;
+    }
+
+    public void setCompletionDate(LocalDate completionDate) {
+        this.completionDate = completionDate;
+    }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Integer getMileageKm() {
+        return mileageKm;
+    }
+
+    public void setMileageKm(Integer mileageKm) {
+        this.mileageKm = mileageKm;
+    }
+
+    public List<WorkmanshipTask> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<WorkmanshipTask> tasks) {
+        this.tasks = tasks;
+    }
+
+    public List<SparePartUsage> getSparePartUsages() {
+        return sparePartUsages;
+    }
+
+    public void setSparePartUsages(List<SparePartUsage> sparePartUsages) {
+        this.sparePartUsages = sparePartUsages;
+    }
+
+    public List<MigData> getMigratedHandWrittenSpareParts() {
+        return migratedHandWrittenSpareParts;
+    }
+
+    public void setMigratedHandWrittenSpareParts(List<MigData> migratedHandWrittenSpareParts) {
+        this.migratedHandWrittenSpareParts = migratedHandWrittenSpareParts;
+    }
 }
