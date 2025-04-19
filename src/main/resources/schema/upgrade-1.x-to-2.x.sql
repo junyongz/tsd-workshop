@@ -17,12 +17,15 @@ left outer join spare_part_usages spu
 group by vehicle_id, md.vehicle_no, md.creation_date, md.completion_date) b ) a
 where md.vehicle_no = a.vehicle_no
 and md.creation_date = a.creation_date
-and (md.completion_date = a.completion_date or md.completion_date is null); -- important for completion_date is null criteria for pending task
+and (md.completion_date = a.completion_date or md.completion_date is null);
 
 -- 4. add mig_data_index into spare_part_usages, use back the same value as "index"
 
 alter table spare_part_usages add column mig_data_index int8;
 update spare_part_usages set mig_data_index = service_id where service_id is not null;
+
+alter table spare_part_usages add column sold_price numeric;
+update spare_part_usages set sold_price = (select unit_price from mig_supplier_spare_parts where id = order_id);
 
 -- 4. patch service_id in spare_part_usages to mig_data.service_id based on mig_data.index
 
