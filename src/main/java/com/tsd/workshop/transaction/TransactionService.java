@@ -28,9 +28,11 @@ public class TransactionService {
         return this.workshopServiceRepository.findById(id);
     }
 
+    @Transactional
     public Mono<Long> deleteById(Long id) {
         return this.workshopServiceRepository.deleteById(id)
-                .map(v -> id);
+                .then(sparePartUsageRepository.deleteByServiceId(id))
+                .then(Mono.just(id));
     }
 
     public Flux<WorkshopService> findAll() {
@@ -61,5 +63,9 @@ public class TransactionService {
                             .all(spu -> spu.getId() != null)
                             .map(b -> ws);
                 });
+    }
+
+    public Flux<WorkshopService> findByVehicleId(Long vehicleId) {
+        return workshopServiceRepository.findByVehicleIdAndCompletionDateIsNull(vehicleId);
     }
 }

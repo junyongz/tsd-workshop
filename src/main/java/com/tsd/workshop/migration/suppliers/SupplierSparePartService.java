@@ -5,6 +5,7 @@ import com.tsd.workshop.migration.spareparts.MigSparePartService;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartRepository;
+import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class SupplierSparePartService {
     private MigSparePartService migSparePartService;
 
     @Autowired
-    private MigDataService migDataService;
+    private SparePartUsageRepository sparePartUsageRepository;
 
     public Flux<SupplierSparePart> saveSupplierSpareParts(List<SupplierSparePart> supplierSpareParts) {
         return supplierSparePartRepository
@@ -51,8 +52,7 @@ public class SupplierSparePartService {
     @Transactional
     public Mono<Void> deleteById(Long id) {
         return supplierSparePartR2dbcRepository.moveToDeletedTable(id)
-                .flatMap(count -> migDataService.deleteByOrderId(id))
-                .defaultIfEmpty(0L)
-                .flatMap(count -> migSparePartService.deleteByOrderId(id));
+                .flatMap(count -> migSparePartService.deleteByOrderId(id))
+                .then(sparePartUsageRepository.deleteByOrderId(id));
     }
 }

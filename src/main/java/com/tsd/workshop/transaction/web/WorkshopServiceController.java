@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/workshop-services")
 public class WorkshopServiceController {
@@ -33,12 +35,19 @@ public class WorkshopServiceController {
     }
 
     @GetMapping
-    public Flux<WorkshopService> getWorkshopServices() {
+    public Flux<WorkshopService> getWorkshopServices(@RequestParam(name = "vehicleId", required = false) Long vehicleId) {
+        if (vehicleId != null) {
+            return transactionService.findByVehicleId(vehicleId);
+        }
         return transactionService.findAll();
     }
 
     @PostMapping
-    public Mono<WorkshopService> saveWorkshopService(@RequestBody WorkshopService workshopService) {
+    public Mono<WorkshopService> saveWorkshopService(@RequestBody WorkshopService workshopService,
+                                                     @RequestParam(name = "op", required = false) Operation op) {
+        if (op == Operation.COMPLETE) {
+            workshopService.setCompletionDate(LocalDate.now());
+        }
         return transactionService.save(workshopService);
     }
 }

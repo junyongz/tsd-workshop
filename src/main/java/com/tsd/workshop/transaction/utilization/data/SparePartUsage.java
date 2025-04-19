@@ -1,8 +1,10 @@
 package com.tsd.workshop.transaction.utilization.data;
 
+import com.tsd.workshop.transaction.data.WorkshopService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Table("spare_part_usages")
@@ -15,6 +17,7 @@ public class SparePartUsage {
     private Long orderId;
     private Long serviceId;
     private Integer quantity;
+    private BigDecimal soldPrice;
 
     // Default constructor
     public SparePartUsage() {}
@@ -76,6 +79,23 @@ public class SparePartUsage {
         this.quantity = quantity;
     }
 
+    public BigDecimal getSoldPrice() {
+        return soldPrice;
+    }
+
+    public void setSoldPrice(BigDecimal soldPrice) {
+        this.soldPrice = soldPrice;
+    }
+
+    // good to use for the first usage
+    public WorkshopService toWorkshopService() {
+        WorkshopService ws = new WorkshopService();
+        ws.setVehicleId(this.vehicleId);
+        ws.setVehicleNo(this.vehicleNo);
+        ws.setStartDate(this.usageDate);
+        return ws;
+    }
+
     @Override
     public String toString() {
         return "SparePartUsage{" +
@@ -86,6 +106,7 @@ public class SparePartUsage {
                 ", orderId=" + orderId +
                 ", serviceId=" + serviceId +
                 ", quantity=" + quantity +
+                ", soldPrice=" + soldPrice +
                 '}';
     }
 }

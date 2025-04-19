@@ -5,7 +5,8 @@ import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import com.tsd.workshop.workmanship.data.WorkmanshipTask;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.relational.core.mapping.InsertOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
@@ -17,10 +18,13 @@ public class WorkshopService {
     @Id
     private Long id;
 
+    @InsertOnlyProperty
     private Long vehicleId;
 
+    @InsertOnlyProperty
     private String vehicleNo;
 
+    @InsertOnlyProperty
     private LocalDate startDate;
 
     private LocalDate completionDate;
@@ -28,15 +32,16 @@ public class WorkshopService {
     private Integer mileageKm;
 
     @CreatedDate
-    private LocalDate creationDate;
+    @InsertOnlyProperty
+    private LocalDate creationDate = LocalDate.now();
 
-    @ReadOnlyProperty
+    @Transient
     private List<WorkmanshipTask> tasks;
 
-    @ReadOnlyProperty
+    @Transient
     private List<SparePartUsage> sparePartUsages;
 
-    @ReadOnlyProperty
+    @Transient
     private List<MigData> migratedHandWrittenSpareParts;
 
     public Long getId() {

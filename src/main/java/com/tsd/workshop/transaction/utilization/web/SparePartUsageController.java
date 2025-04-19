@@ -20,7 +20,15 @@ public class SparePartUsageController {
 
     @PostMapping
     public Mono<SparePartUsage> createSparePartUsage(@RequestBody SparePartUsage sparePartUsage) {
+        if (sparePartUsage.getOrderId() == null) {
+            throw new IllegalArgumentException("spare part usage must have orderId");
+        }
         return sparePartUsageService.saveSparePartUsage(sparePartUsage);
+    }
+
+    @DeleteMapping("/{sparePartUsageId}")
+    public Mono<Long> deleteSparePart(@PathVariable Long sparePartUsageId) {
+        return sparePartUsageService.deleteById(sparePartUsageId);
     }
 
 }

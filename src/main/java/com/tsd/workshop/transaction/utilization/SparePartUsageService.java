@@ -1,10 +1,11 @@
 package com.tsd.workshop.transaction.utilization;
 
 import com.tsd.workshop.migration.data.MigData;
-import com.tsd.workshop.migration.data.MigDataRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartRepository;
+import com.tsd.workshop.transaction.data.WorkshopService;
+import com.tsd.workshop.transaction.data.WorkshopServiceRepository;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageR2dbcRepository;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
@@ -34,21 +35,20 @@ public class SparePartUsageService {
     private SupplierSparePartR2dbcRepository supplierSparePartR2dbcRepository;
 
     @Autowired
-    private MigDataRepository migDataRepository;
+    private WorkshopServiceRepository workshopServiceRepository;
 
     @Transactional
     public Mono<SparePartUsage> saveSparePartUsage(SparePartUsage sparePartUsage) {
-        return supplierSparePartRepository.findById(sparePartUsage.getOrderId())
-                    .flatMap(ssp -> {
-                        MigData migData = ssp.toMigData();
-                        migData.afterRecordUsage(sparePartUsage);
+        if (sparePartUsage.getServiceId() == null) {
+            WorkshopService ws = sparePartUsage.toWorkshopService();
 
-                        return migDataRepository.save(migData);
-                    })
-                    .flatMap(md -> {
-                        sparePartUsage.setServiceId(md.getIndex());
+            return workshopServiceRepository.save(ws)
+                    .flatMap(saved -> {
+                        sparePartUsage.setServiceId(saved.getId());
                         return sparePartUsageRepository.save(sparePartUsage);
                     });
+        }
+        return sparePartUsageRepository.save(sparePartUsage);
     }
 
     public Mono<SparePartUsage> findById(Long id) {
@@ -59,16 +59,19 @@ public class SparePartUsageService {
         return sparePartUsageRepository.findAll();
     }
 
-    public Mono<Void> deleteById(Long id) {
+    @Transactional
+    public Mono<Long> deleteById(Long id) {
         return sparePartUsageRepository.deleteById(id)
-                .then(Mono.empty());
+                .then(Mono.just(id));
     }
 
+    @Transactional
     public Mono<Void> deleteByServiceId(Long serviceId) {
         return sparePartUsageRepository.deleteByServiceId(serviceId)
                 .then(Mono.empty());
     }
 
+    @Transactional
     public Flux<SparePartUsage> saveAllSparePartUsages(Iterable<SparePartUsage> sparePartUsages) {
         return sparePartUsageRepository.saveAll(sparePartUsages);
     }
