@@ -1,6 +1,8 @@
 package com.tsd.workshop.web;
 
 import com.tsd.workshop.ErrorCodedRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,8 +16,12 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
+    private final Logger logger = LoggerFactory.getLogger(GlobalControllerAdvice.class);
+
     @ExceptionHandler
     public ResponseEntity<String> handleAnyProblem(ErrorCodedRuntimeException ex) {
+        logger.error("hit some coded error", ex);
+
         return new ResponseEntity<>(
                 """
                 {"code": "%s", "description": "%s"}
