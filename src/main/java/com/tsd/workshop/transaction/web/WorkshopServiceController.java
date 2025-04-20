@@ -2,6 +2,7 @@ package com.tsd.workshop.transaction.web;
 
 import com.tsd.workshop.migration.MigDataService;
 import com.tsd.workshop.transaction.TransactionService;
+import com.tsd.workshop.transaction.VehicleOngoingServiceException;
 import com.tsd.workshop.transaction.data.WorkshopService;
 import com.tsd.workshop.transaction.utilization.SparePartUsageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/workshop-services")
@@ -48,6 +50,14 @@ public class WorkshopServiceController {
         if (op == Operation.COMPLETE) {
             workshopService.setCompletionDate(LocalDate.now());
         }
-        return transactionService.save(workshopService);
+        return transactionService.findByVehicleId(workshopService.getVehicleId())
+                .collectList()
+                .flatMap(wss -> {
+                    if (!wss.isEmpty() && !Objects.equals(wss.getFirst().getId(), workshopService.getId())) {
+                        throw new VehicleOngoingServiceException(wss.getFirst().getVehicleNo(), wss.getFirst().getStartDate());
+                    }
+                    return Mono.empty();
+                })
+                .then(transactionService.save(workshopService));
     }
 }
