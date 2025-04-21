@@ -3,6 +3,7 @@ package com.tsd.workshop.transaction;
 import com.tsd.workshop.migration.data.MigDataRepository;
 import com.tsd.workshop.transaction.data.WorkshopService;
 import com.tsd.workshop.transaction.data.WorkshopServiceRepository;
+import com.tsd.workshop.transaction.data.WorkshopServiceSqlRepository;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,17 @@ public class TransactionService {
     @Autowired
     private SparePartUsageRepository sparePartUsageRepository;
 
+    @Autowired
+    private WorkshopServiceSqlRepository workshopServiceSqlRepository;
+
     public Mono<WorkshopService> findById(Long id) {
         return this.workshopServiceRepository.findById(id);
     }
 
     @Transactional
     public Mono<Long> deleteById(Long id) {
-        return this.workshopServiceRepository.deleteById(id)
+        return this.workshopServiceSqlRepository.moveToDeletedTable(id)
+                .flatMap( count -> this.workshopServiceRepository.deleteById(id))
                 .then(sparePartUsageRepository.deleteByServiceId(id))
                 .then(Mono.just(id));
     }
