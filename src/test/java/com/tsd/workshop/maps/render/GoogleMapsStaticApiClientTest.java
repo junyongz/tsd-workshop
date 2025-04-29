@@ -1,6 +1,7 @@
 package com.tsd.workshop.maps.render;
 
 import com.tsd.workshop.UrlSigner;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
@@ -15,6 +16,7 @@ import java.util.Properties;
 
 import static org.assertj.core.api.Fail.fail;
 
+@Disabled
 @DisplayName("dont do this too much because having actual API call, disable it after run")
 public class GoogleMapsStaticApiClientTest {
 
