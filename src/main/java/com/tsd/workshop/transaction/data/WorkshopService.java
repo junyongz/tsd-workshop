@@ -1,6 +1,7 @@
 package com.tsd.workshop.transaction.data;
 
 import com.tsd.workshop.migration.data.MigData;
+import com.tsd.workshop.transaction.TransactionType;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import com.tsd.workshop.workmanship.data.WorkmanshipTask;
 import org.springframework.data.annotation.CreatedDate;
@@ -30,6 +31,8 @@ public class WorkshopService {
     private LocalDate completionDate;
 
     private Integer mileageKm;
+
+    private TransactionType[] transactionTypes;
 
     @CreatedDate
     @InsertOnlyProperty
@@ -98,6 +101,14 @@ public class WorkshopService {
 
     public void setMileageKm(Integer mileageKm) {
         this.mileageKm = mileageKm;
+    }
+
+    public TransactionType[] getTransactionTypes() {
+        return transactionTypes;
+    }
+
+    public void setTransactionTypes(TransactionType[] transactionTypes) {
+        this.transactionTypes = transactionTypes;
     }
 
     public List<WorkmanshipTask> getTasks() {

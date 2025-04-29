@@ -26,7 +26,13 @@ public class SupplierSparePartController {
      * @return the saved one
      */
     @PostMapping
-    public Flux<SupplierSparePart> createSupplierSpareParts(@RequestBody List<SupplierSparePart> supplierSpareParts) {
+    public Flux<SupplierSparePart> saveSupplierSpareParts(@RequestBody List<SupplierSparePart> supplierSpareParts,
+                                                            @RequestParam(value = "op", required = false) Operation operation) {
+        if (operation == Operation.NOTES) {
+            // only will deal with the first supplier spare parts
+            return supplierSparePartService.updateNotes(supplierSpareParts.getFirst()).flux();
+        }
+
         List<SupplierSparePart> editingSsp = supplierSpareParts.stream().filter(ssp -> ssp.getId() != null)
                 .toList();
 

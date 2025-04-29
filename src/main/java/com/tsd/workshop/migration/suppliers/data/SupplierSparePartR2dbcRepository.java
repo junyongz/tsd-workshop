@@ -1,17 +1,14 @@
 package com.tsd.workshop.migration.suppliers.data;
 
-import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import io.r2dbc.spi.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Transactional(readOnly = true)
 @Repository
@@ -20,16 +17,12 @@ public class SupplierSparePartR2dbcRepository {
     @Autowired
     private DatabaseClient databaseClient;
 
-    // TODO to clear this afterward, just greedy with the SQL here.
-    public Flux<Long> updateUsageNote(List<SparePartUsage> usages) {
-        return Flux.fromIterable(usages).flatMap(usage ->
-                databaseClient.sql("update mig_supplier_spare_parts set notes = coalesce(notes, '') || " +
-                                "case when notes is null then '' else chr(10) end || :notes " +
-                                "where id = :id")
-                        .bind(0, "Used by: %s @ %s".formatted(usage.getVehicleNo(), usage.getUsageDate()))
-                        .bind(1, usage.getOrderId())
-                        .flatMap(Result::getRowsUpdated)
-        );
+    public Mono<Long> updateNotes(SupplierSparePart sparePart) {
+        return databaseClient.sql("update mig_supplier_spare_parts set notes = :notes where id = :id")
+                .bind(0, sparePart.getNotes())
+                .bind(1, sparePart.getId())
+                .flatMap(Result::getRowsUpdated)
+                .singleOrEmpty();
     }
 
     public Mono<Integer> quantityById(Long orderId) {

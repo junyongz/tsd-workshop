@@ -68,3 +68,5 @@ update mig_data set service_id = null where index in (select mig_data_index from
 create table deleted_workshop_service as (select * from workshop_service where id = -1);
 alter table deleted_workshop_service add column deletion_date date;
 alter table deleted_workshop_service add column spare_part_usages json;
+
+alter table workshop_service add column transaction_types text[];

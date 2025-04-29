@@ -1,6 +1,5 @@
 package com.tsd.workshop.migration.suppliers;
 
-import com.tsd.workshop.migration.MigDataService;
 import com.tsd.workshop.migration.spareparts.MigSparePartService;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
@@ -37,6 +36,16 @@ public class SupplierSparePartService {
                     .flatMapMany(sss ->
                         migSparePartService.smartSaveMigSpareParts(sss).thenMany(Flux.fromIterable(sss))
                     );
+    }
+
+    public Mono<SupplierSparePart> updateNotes(SupplierSparePart spp) {
+        return supplierSparePartR2dbcRepository.updateNotes(spp)
+                .flatMap(count -> {
+                    if (count == 0) {
+                        throw new SupplierSparePartNotFoundException(spp);
+                    }
+                    return Mono.just(spp);
+                });
     }
 
     public Mono<SupplierSparePart> findById(Long id) {
