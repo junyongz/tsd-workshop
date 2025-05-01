@@ -1,15 +1,14 @@
 package com.tsd.workshop.company.data;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("company")
 public class Company {
     @Id
     private Long id;
-    @Column("company_name")
     private String companyName;
+    private Boolean internal = false;
 
     // Default constructor
     public Company() {}
@@ -36,11 +35,20 @@ public class Company {
         this.companyName = companyName;
     }
 
+    public Boolean getInternal() {
+        return internal;
+    }
+
+    public void setInternal(Boolean internal) {
+        this.internal = internal;
+    }
+
     @Override
     public String toString() {
         return "Company{" +
                 "id=" + id +
                 ", companyName='" + companyName + '\'' +
+                ", internal=" + internal +
                 '}';
     }
 }

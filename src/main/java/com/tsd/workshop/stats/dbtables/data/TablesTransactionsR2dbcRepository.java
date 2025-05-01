@@ -16,7 +16,7 @@ public class TablesTransactionsR2dbcRepository {
 
     public Flux<TableTransaction> getTablesLastTransactions() {
         return databaseClient.sql("""
-                   select 'mig_data' as table_name, MAX(xmin::text::bigint) AS last_trx_id from mig_data
+                   select 'workshop_service' as table_name, MAX(xmin::text::bigint) AS last_trx_id from workshop_service
                     union
                     select 'mig_supplier_spare_parts' as table_name, MAX(xmin::text::bigint) AS last_trx_id from mig_supplier_spare_parts
                     union

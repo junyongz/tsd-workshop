@@ -1,19 +1,28 @@
 package com.tsd.workshop.vehicle.data;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.InsertOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.LocalDate;
 
 @Table("vehicle")
 public class Vehicle {
     @Id
     private Long id;
+
+    @InsertOnlyProperty
     @Column("plate_no")
     private String vehicleNo;
-    @Column("trailer_no")
     private String trailerNo;
-    @Column("company_id")
     private Long companyId;
+    private LocalDate insuranceExpiryDate;
+    private LocalDate roadTaxExpiryDate;
+
+    @ReadOnlyProperty
+    private Integer latestMileageKm;
 
     // Default constructor
     public Vehicle() {}
@@ -56,12 +65,39 @@ public class Vehicle {
         this.companyId = companyId;
     }
 
+    public LocalDate getInsuranceExpiryDate() {
+        return insuranceExpiryDate;
+    }
+
+    public void setInsuranceExpiryDate(LocalDate insuranceExpiryDate) {
+        this.insuranceExpiryDate = insuranceExpiryDate;
+    }
+
+    public LocalDate getRoadTaxExpiryDate() {
+        return roadTaxExpiryDate;
+    }
+
+    public void setRoadTaxExpiryDate(LocalDate roadTaxExpiryDate) {
+        this.roadTaxExpiryDate = roadTaxExpiryDate;
+    }
+
+    public Integer getLatestMileageKm() {
+        return latestMileageKm;
+    }
+
+    public void setLatestMileageKm(Integer latestMileageKm) {
+        this.latestMileageKm = latestMileageKm;
+    }
+
     @Override
     public String toString() {
         return "Vehicle{" +
                 "vehicleNo='" + vehicleNo + '\'' +
                 ", trailerNo='" + trailerNo + '\'' +
                 ", companyId=" + companyId +
+                ", insuranceExpiryDate=" + insuranceExpiryDate +
+                ", roadTaxExpiryDate=" + roadTaxExpiryDate +
+                ", latestMileageKm=" + latestMileageKm +
                 '}';
     }
 }

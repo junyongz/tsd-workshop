@@ -2,6 +2,7 @@ package com.tsd.workshop.transaction.web;
 
 import com.tsd.workshop.migration.MigDataService;
 import com.tsd.workshop.transaction.TransactionService;
+import com.tsd.workshop.transaction.TransactionType;
 import com.tsd.workshop.transaction.VehicleOngoingServiceException;
 import com.tsd.workshop.transaction.data.WorkshopService;
 import com.tsd.workshop.transaction.utilization.SparePartUsageService;
@@ -37,9 +38,14 @@ public class WorkshopServiceController {
     }
 
     @GetMapping
-    public Flux<WorkshopService> getWorkshopServices(@RequestParam(name = "vehicleId", required = false) Long vehicleId) {
+    public Flux<WorkshopService> getWorkshopServices(
+            @RequestParam(name = "vehicleId", required = false) Long vehicleId,
+            @RequestParam(name="type", required = false) TransactionType[] transactionTypes) {
         if (vehicleId != null) {
             return transactionService.findByVehicleId(vehicleId);
+        }
+        if (transactionTypes != null) {
+            return transactionService.findLatestByTransactionTypes(transactionTypes);
         }
         return transactionService.findAll();
     }
@@ -60,4 +66,5 @@ public class WorkshopServiceController {
                 })
                 .then(transactionService.save(workshopService));
     }
+
 }

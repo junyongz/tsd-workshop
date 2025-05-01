@@ -3,6 +3,7 @@ package com.tsd.workshop.vehicle;
 import com.tsd.workshop.vehicle.data.Vehicle;
 import com.tsd.workshop.vehicle.data.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,7 +22,8 @@ public class VehicleService {
     }
 
     public Flux<Vehicle> findAll() {
-        return vehicleRepository.findAll();
+        return vehicleRepository.findAll(Sort.by(Sort.Order.asc("companyId"),
+                Sort.Order.asc("vehicleNo")));
     }
 
     public Mono<Void> deleteById(Long id) {

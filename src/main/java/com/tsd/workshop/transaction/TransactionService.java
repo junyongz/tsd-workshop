@@ -73,4 +73,8 @@ public class TransactionService {
     public Flux<WorkshopService> findByVehicleId(Long vehicleId) {
         return workshopServiceRepository.findByVehicleIdAndCompletionDateIsNull(vehicleId);
     }
+
+    public Flux<WorkshopService> findLatestByTransactionTypes(TransactionType[] transactionTypes) {
+        return workshopServiceRepository.findLatestByTransactionTypes(transactionTypes);
+    }
 }
