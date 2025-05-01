@@ -70,3 +70,27 @@ alter table deleted_workshop_service add column deletion_date date;
 alter table deleted_workshop_service add column spare_part_usages json;
 
 alter table workshop_service add column transaction_types text[];
+
+create index idx_service_id on spare_part_usages (service_id);
+create index idx_mig_service_id on mig_data (service_id);
+alter table workshop_service  add primary key (id);
+
+-- patching due to transaction_types, because of new column added in future
+create table temp_deleted_workshop_service as
+select id, vehicle_id, vehicle_no, start_date, completion_date, creation_date, mileage_km, null::text[] as transaction_types, spare_part_usages, deletion_date
+from deleted_workshop_service;
+
+drop table deleted_workshop_service;
+
+create table deleted_workshop_service as (select * from temp_deleted_workshop_service);
+
+drop table temp_deleted_workshop_service;
+
+-- new for vehicle maintenance
+alter table vehicle add column insurance_expiry_date date,
+add column road_tax_expiry_date date,
+add column latest_mileage_km int8;
+
+alter table company add column internal boolean;
+
+update company set internal = true where id = 1000;
