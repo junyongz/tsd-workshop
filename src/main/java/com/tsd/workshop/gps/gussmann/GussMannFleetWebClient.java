@@ -1,15 +1,15 @@
-package com.tsd.workshop.gps;
+package com.tsd.workshop.gps.gussmann;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
-@Service
+@Component
 public class GussMannFleetWebClient {
 
     private final GussMannFleetLoginModule loginModule;

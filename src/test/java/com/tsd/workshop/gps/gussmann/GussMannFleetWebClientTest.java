@@ -1,11 +1,8 @@
-package com.tsd.workshop.gps;
+package com.tsd.workshop.gps.gussmann;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Map;
 import java.util.Properties;

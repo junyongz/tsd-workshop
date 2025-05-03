@@ -1,4 +1,4 @@
-package com.tsd.workshop.gps;
+package com.tsd.workshop.gps.gussmann;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,7 +21,7 @@ public class GussMannFleetLoginModule {
 
     private final transient String password;
 
-    private String loginUrl = "https://fleet.avls.com.my/Login.aspx";
+    private final String loginUrl;
 
     public GussMannFleetLoginModule(@Value("${gussmann.login.username}") String username,
                                     @Value("${gussmann.login.password}") String password,

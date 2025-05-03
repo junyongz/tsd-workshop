@@ -1,4 +1,4 @@
-package com.tsd.workshop.gps;
+package com.tsd.workshop.gps.gussmann;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

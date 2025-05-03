@@ -1,4 +1,4 @@
-package com.tsd.workshop.gps;
+package com.tsd.workshop.gps.gussmann;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.util.LinkedMultiValueMap;

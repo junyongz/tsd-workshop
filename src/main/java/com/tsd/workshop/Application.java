@@ -5,8 +5,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import reactor.core.publisher.Hooks;
 
+@EnableScheduling
 @SpringBootApplication
 public class Application {
     public static void main(String[] args) {
@@ -17,7 +19,7 @@ public class Application {
 
     @Bean
     @ConditionalOnProperty(name = "google.maps.integration.enabled", havingValue = "true")
-    UrlSigner gooleUrlSigner(@Value("${google.platform.api.secret.key}") String base64SecretKey) {
+    UrlSigner googleUrlSigner(@Value("${google.platform.api.secret.key}") String base64SecretKey) {
         return new UrlSigner(base64SecretKey, "HmacSHA1");
     }
 }

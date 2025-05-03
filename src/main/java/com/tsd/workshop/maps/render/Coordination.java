@@ -17,4 +17,19 @@ public class Coordination {
     String toUrl() {
         return this.latitude + "," + this.longitude;
     }
+
+    public String asJson() {
+        return "{" +
+                "\"latitude\": " + latitude +
+                ", \"longitude\": " + longitude +
+                "}";
+    }
+
+    @Override
+    public String toString() {
+        return "Coordination{" +
+                "latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
+    }
 }
