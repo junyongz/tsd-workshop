@@ -1,5 +1,6 @@
 package com.tsd.workshop.transaction.data;
 
+import com.tsd.workshop.transaction.WorkshopServiceNotFoundException;
 import io.r2dbc.spi.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -10,13 +11,13 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
+@Transactional
 @Service
 public class WorkshopServiceSqlRepository {
 
     @Autowired
     private DatabaseClient databaseClient;
 
-    @Transactional
     public Mono<Long> moveToDeletedTable(Long id) {
         return databaseClient.sql("insert into deleted_workshop_service (select * from workshop_service where id = :id)")
                 .bind(0, id)
@@ -47,4 +48,19 @@ public class WorkshopServiceSqlRepository {
                                 })
                 );
     }
+
+    public Mono<WorkshopService> completeWorkshopService(WorkshopService ws) {
+        return databaseClient.sql("update workshop_service set completion_date = :completion_date where id = :id")
+                .bind(0, ws.getCompletionDate())
+                .bind(1, ws.getId())
+                .fetch()
+                .rowsUpdated()
+                .map(count -> {
+                    if (count == 0) {
+                        throw new WorkshopServiceNotFoundException(ws);
+                    }
+                    return ws;
+                });
+    }
+
 }

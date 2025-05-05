@@ -1,11 +1,9 @@
 package com.tsd.workshop.transaction.web;
 
-import com.tsd.workshop.migration.MigDataService;
 import com.tsd.workshop.transaction.TransactionService;
 import com.tsd.workshop.transaction.TransactionType;
 import com.tsd.workshop.transaction.VehicleOngoingServiceException;
 import com.tsd.workshop.transaction.data.WorkshopService;
-import com.tsd.workshop.transaction.utilization.SparePartUsageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -20,12 +18,6 @@ public class WorkshopServiceController {
 
     @Autowired
     private TransactionService transactionService;
-
-    @Autowired
-    private MigDataService migDataService;
-
-    @Autowired
-    private SparePartUsageService sparePartUsageService;
 
     @GetMapping("/{id}")
     public Mono<WorkshopService> getSingle(@PathVariable Long id) {
@@ -54,8 +46,12 @@ public class WorkshopServiceController {
     public Mono<WorkshopService> saveWorkshopService(@RequestBody WorkshopService workshopService,
                                                      @RequestParam(name = "op", required = false) Operation op) {
         if (op == Operation.COMPLETE) {
-            workshopService.setCompletionDate(LocalDate.now());
+            if (workshopService.getCompletionDate() == null) {
+                workshopService.setCompletionDate(LocalDate.now());
+            }
+            return transactionService.completeService(workshopService);
         }
+
         return transactionService.findByVehicleId(workshopService.getVehicleId())
                 .collectList()
                 .flatMap(wss -> {

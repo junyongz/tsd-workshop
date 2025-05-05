@@ -77,4 +77,9 @@ public class TransactionService {
     public Flux<WorkshopService> findLatestByTransactionTypes(TransactionType[] transactionTypes) {
         return workshopServiceRepository.findLatestByTransactionTypes(transactionTypes);
     }
+
+    @Transactional
+    public Mono<WorkshopService> completeService(WorkshopService ws) {
+        return workshopServiceSqlRepository.completeWorkshopService(ws);
+    }
 }
