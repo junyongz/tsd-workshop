@@ -44,7 +44,7 @@ public class VehicleSqlRepository {
                         return databaseClient.sql("""
                                 delete from vehicle_fleet_info where id in
                                 (select id from vehicle_fleet_info where vehicle_no = :vehicle_no
-                                order by to_timestamp((data->>'recordedDateTime'), 'YYYY-MM-DD"T"HH24:MI:SS') desc
+                                order by creation_date desc
                                 offset :max_record_num
                                 )
                         """).bind("vehicle_no", fleetInfo.getVehicleNo())
