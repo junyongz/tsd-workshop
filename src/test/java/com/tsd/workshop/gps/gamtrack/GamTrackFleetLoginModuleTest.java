@@ -1,8 +1,7 @@
 package com.tsd.workshop.gps.gamtrack;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseCookie;
 import org.springframework.util.MultiValueMap;
 
@@ -10,6 +9,7 @@ import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Disabled("for local testing only")
 public class GamTrackFleetLoginModuleTest {
 
     @Test
@@ -24,7 +24,7 @@ public class GamTrackFleetLoginModuleTest {
         );
 
         MultiValueMap<String, ResponseCookie> cookies = loginModule.login().block();
-        assertThat(cookies.getFirst("fleetcookpass").getValue()).isEqualTo(props.getProperty("gumtrack.login.password"));
+        assertThat(cookies.getFirst("fleetcookpass").getValue()).isEqualTo(props.getProperty("gamtrack.login.password"));
 
     }
 

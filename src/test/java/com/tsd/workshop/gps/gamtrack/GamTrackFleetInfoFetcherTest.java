@@ -1,10 +1,12 @@
 package com.tsd.workshop.gps.gamtrack;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import java.util.Properties;
 
+@Disabled("only for local testing")
 public class GamTrackFleetInfoFetcherTest {
 
     @Test

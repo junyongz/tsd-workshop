@@ -2,6 +2,7 @@ package com.tsd.workshop.gps.gamtrack;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Disabled("for local testing only")
 public class GamTrackFleetWebClientTest {
 
     @Test

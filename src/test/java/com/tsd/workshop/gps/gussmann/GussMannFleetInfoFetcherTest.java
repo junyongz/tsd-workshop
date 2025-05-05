@@ -1,10 +1,12 @@
 package com.tsd.workshop.gps.gussmann;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import java.util.Properties;
 
+@Disabled("for local testing only")
 public class GussMannFleetInfoFetcherTest {
 
     @Test
@@ -23,11 +25,11 @@ public class GussMannFleetInfoFetcherTest {
 
         GussMannFleetInfoFetcher fetcher = new GussMannFleetInfoFetcher(client);
         StepVerifier.create(fetcher.fetch())
-                .expectNextMatches(fleetInfo -> fleetInfo.getVehicleNo().equals("JNU 1168"))
-                .expectNextMatches(fleetInfo -> fleetInfo.getVehicleNo().equals("JPQ 1388"))
-                .expectNextMatches(fleetInfo -> fleetInfo.getVehicleNo().equals("JQY 3899"))
-                .expectNextMatches(fleetInfo -> fleetInfo.getVehicleNo().equals("JSY 2588"))
-                .expectNextMatches(fleetInfo -> fleetInfo.getVehicleNo().equals("JTP 1088"))
+                .expectNextMatches(fleetInfo -> fleetInfo.getVehicleNo().equals("XXX XXXX"))
+                .expectNextMatches(fleetInfo -> fleetInfo.getVehicleNo().equals("XXX XXXX"))
+                .expectNextMatches(fleetInfo -> fleetInfo.getVehicleNo().equals("XXX XXXX"))
+                .expectNextMatches(fleetInfo -> fleetInfo.getVehicleNo().equals("XXX XXXX"))
+                .expectNextMatches(fleetInfo -> fleetInfo.getVehicleNo().equals("XXX XXXX"))
                 .expectComplete()
                 .verify();
     }
