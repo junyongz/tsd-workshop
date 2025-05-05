@@ -94,3 +94,23 @@ add column latest_mileage_km int8;
 alter table company add column internal boolean;
 
 update company set internal = true where id = 1000;
+
+-- fleet info, odometer, fuel and location
+
+CREATE SEQUENCE vehicle_fleet_info_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 9223372036854775807
+	START 1
+	CACHE 1
+	NO CYCLE;
+
+create table vehicle_fleet_info (
+	id int8 DEFAULT nextval('vehicle_fleet_info_seq'::regclass) primary key,
+	vehicle_id int8,
+	vehicle_no varchar(12),
+	creation_date date,
+	data jsonb
+);
+
+create index idx_fleet_vehicle_id on vehicle_fleet_info (vehicle_id);
