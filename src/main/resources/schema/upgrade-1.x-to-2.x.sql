@@ -109,8 +109,8 @@ create table vehicle_fleet_info (
 	id int8 DEFAULT nextval('vehicle_fleet_info_seq'::regclass) primary key,
 	vehicle_id int8,
 	vehicle_no varchar(12),
-	creation_date date,
+	creation_date timestamp,
 	data jsonb
 );
 
-create index idx_fleet_vehicle_id on vehicle_fleet_info (vehicle_id);
+create index idx_fleet_vehicle_no on vehicle_fleet_info (vehicle_no);
