@@ -45,14 +45,14 @@ class TransactionControllerTest {
 
         MigData md1 = new MigData();
         md1.setItemDescription("Spare part 1");
-        md1.setQuantity(1);
+        md1.setQuantity(BigDecimal.ONE);
         md1.setUnit("pc");
         md1.setUnitPrice(new BigDecimal("30.50"));
         md1.setTotalPrice(new BigDecimal("30.50"));
 
         MigData md2 = new MigData();
         md2.setItemDescription("Spare part 2");
-        md2.setQuantity(20);
+        md2.setQuantity(new BigDecimal(20));
         md2.setUnit("litre");
         md2.setUnitPrice(new BigDecimal("10.00"));
         md2.setTotalPrice(new BigDecimal("200.00"));
@@ -101,14 +101,14 @@ class TransactionControllerTest {
 
         MigData md1 = new MigData();
         md1.setItemDescription("Spare part 1");
-        md1.setQuantity(1);
+        md1.setQuantity(BigDecimal.ONE);
         md1.setUnit("pc");
         md1.setUnitPrice(new BigDecimal("30.50"));
         md1.setTotalPrice(new BigDecimal("30.50"));
 
         MigData md2 = new MigData();
         md2.setItemDescription("Spare part 2");
-        md2.setQuantity(20);
+        md2.setQuantity(new BigDecimal(20));
         md2.setUnit("litre");
         md2.setUnitPrice(new BigDecimal("10.00"));
         md2.setTotalPrice(new BigDecimal("200.00"));
@@ -122,7 +122,7 @@ class TransactionControllerTest {
                 .exchange()
                 .expectStatus().is2xxSuccessful();
 
-        List<MigData> migDatas = (List<MigData>) migDatasArgCaptor.getValue();
+        List<MigData> migDatas = migDatasArgCaptor.getValue();
         assertThat(migDatas.get(0).getCompletionDate()).isNotNull();
         assertThat(migDatas.get(1).getCompletionDate()).isNotNull();
 

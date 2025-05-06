@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,11 +34,11 @@ public class TransactionServiceTest {
 
         SparePartUsage spu1 = new SparePartUsage();
         spu1.setId(50000L);
-        spu1.setQuantity(1);
+        spu1.setQuantity(BigDecimal.ONE);
         spu1.setOrderId(2000L);
         SparePartUsage spu2 = new SparePartUsage();
         spu2.setId(50001L);
-        spu2.setQuantity(2);
+        spu2.setQuantity(BigDecimal.TWO);
         spu2.setOrderId(2001L);
         ws.setSparePartUsages(List.of(spu1, spu2));
 
@@ -102,22 +103,22 @@ public class TransactionServiceTest {
 
         SparePartUsage spu1 = new SparePartUsage();
         spu1.setOrderId(5000L);
-        spu1.setQuantity(1);
+        spu1.setQuantity(BigDecimal.ONE);
 
         SparePartUsage spu2 = new SparePartUsage();
         spu2.setOrderId(5001L);
-        spu2.setQuantity(5);
+        spu2.setQuantity(BigDecimal.valueOf(5));
 
         SparePartUsageRepository spuRepo = mock(SparePartUsageRepository.class);
         when(spuRepo.findByServiceId(1000L)).thenReturn(Flux.just(spu1, spu2));
 
         SparePartUsage spu3 = new SparePartUsage();
         spu3.setOrderId(5002L);
-        spu3.setQuantity(10);
+        spu3.setQuantity(BigDecimal.TEN);
 
         SparePartUsage spu4 = new SparePartUsage();
         spu4.setOrderId(5003L);
-        spu4.setQuantity(5);
+        spu4.setQuantity(BigDecimal.valueOf(5));
 
         when(spuRepo.findByServiceId(1001L)).thenReturn(Flux.just(spu3, spu4));
 
@@ -128,15 +129,15 @@ public class TransactionServiceTest {
 
         StepVerifier.create(txService.findAll())
                 .expectNextMatches(wss ->
-                    wss.getMigratedHandWrittenSpareParts().get(0).getPartName().equals("OIL FILTER") &&
+                    wss.getMigratedHandWrittenSpareParts().getFirst().getPartName().equals("OIL FILTER") &&
                             wss.getMigratedHandWrittenSpareParts().get(1).getPartName().equals("FUEL FILTER") &&
-                            wss.getSparePartUsages().get(0).getOrderId().equals(5000L) &&
+                            wss.getSparePartUsages().getFirst().getOrderId().equals(5000L) &&
                             wss.getSparePartUsages().get(1).getOrderId().equals(5001L)
                 )
                 .expectNextMatches(wss ->
-                        wss.getMigratedHandWrittenSpareParts().get(0).getPartName().equals("BRAKE LINING") &&
+                        wss.getMigratedHandWrittenSpareParts().getFirst().getPartName().equals("BRAKE LINING") &&
                                 wss.getMigratedHandWrittenSpareParts().get(1).getPartName().equals("6MM SCREW") &&
-                                wss.getSparePartUsages().get(0).getOrderId().equals(5002L) &&
+                                wss.getSparePartUsages().getFirst().getOrderId().equals(5002L) &&
                                 wss.getSparePartUsages().get(1).getOrderId().equals(5003L)
                 )
                 .verifyComplete();

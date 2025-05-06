@@ -3,13 +3,15 @@ package com.tsd.workshop.transaction.utilization;
 import com.tsd.workshop.ErrorCodedRuntimeException;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
 
+import java.math.BigDecimal;
+
 public class QuantityNotMatchedException extends ErrorCodedRuntimeException {
 
     private SupplierSparePart ssp;
 
-    private int usage;
+    private BigDecimal usage;
 
-    public QuantityNotMatchedException(SupplierSparePart ssp, int usage) {
+    public QuantityNotMatchedException(SupplierSparePart ssp, BigDecimal usage) {
         super("Quantity for spare part %s should not be changed after creation and used, currently %s in use".formatted(ssp, usage));
         this.ssp = ssp;
         this.usage = usage;
@@ -19,7 +21,7 @@ public class QuantityNotMatchedException extends ErrorCodedRuntimeException {
         return ssp;
     }
 
-    public int getUsage() {
+    public BigDecimal getUsage() {
         return usage;
     }
 

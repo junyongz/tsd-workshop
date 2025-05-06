@@ -64,6 +64,7 @@ public class TransactionService {
                         spu.setServiceId(ws.getId());
                     }
 
+                    // TODO to check spare part usage too
                     return sparePartUsageRepository.saveAll(workshopService.getSparePartUsages())
                             .all(spu -> spu.getId() != null)
                             .map(b -> ws);

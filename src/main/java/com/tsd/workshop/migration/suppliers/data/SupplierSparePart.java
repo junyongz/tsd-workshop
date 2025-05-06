@@ -18,7 +18,7 @@ public class SupplierSparePart {
     private String itemCode;
     private String partName;
     private String particular;
-    private Integer quantity;
+    private BigDecimal quantity;
     private String unit;
     private BigDecimal unitPrice;
     private String notes;
@@ -85,11 +85,11 @@ public class SupplierSparePart {
         this.particular = particular;
     }
 
-    public Integer getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 

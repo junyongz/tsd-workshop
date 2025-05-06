@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Transactional(readOnly = true)
@@ -25,10 +26,10 @@ public class SupplierSparePartR2dbcRepository {
                 .singleOrEmpty();
     }
 
-    public Mono<Integer> quantityById(Long orderId) {
+    public Mono<BigDecimal> quantityById(Long orderId) {
         return databaseClient.sql("select coalesce(quantity,0) quantity from mig_supplier_spare_parts where id = :order_id")
                 .bind(0, orderId)
-                .map(row -> row.get("quantity", Integer.class))
+                .map(row -> row.get("quantity", BigDecimal.class))
                 .first();
     }
 

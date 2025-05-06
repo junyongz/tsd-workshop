@@ -114,3 +114,6 @@ create table vehicle_fleet_info (
 );
 
 create index idx_fleet_vehicle_no on vehicle_fleet_info (vehicle_no);
+
+alter table vehicle add column inspection_due_date date,
+add column status text;

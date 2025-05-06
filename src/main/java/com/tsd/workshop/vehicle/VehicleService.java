@@ -22,7 +22,8 @@ public class VehicleService {
     }
 
     public Flux<Vehicle> findAll() {
-        return vehicleRepository.findAll(Sort.by(Sort.Order.asc("companyId"),
+        return vehicleRepository.findAll(Sort.by(Sort.Order.asc("companyId").nullsLast(),
+                Sort.Order.desc("latestMileageKm").nullsLast(),
                 Sort.Order.asc("vehicleNo")));
     }
 

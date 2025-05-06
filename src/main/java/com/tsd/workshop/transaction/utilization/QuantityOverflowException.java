@@ -2,23 +2,25 @@ package com.tsd.workshop.transaction.utilization;
 
 import com.tsd.workshop.ErrorCodedRuntimeException;
 
+import java.math.BigDecimal;
+
 public class QuantityOverflowException extends ErrorCodedRuntimeException {
 
-    private int usageQuantity;
+    private BigDecimal usageQuantity;
 
-    private int orderQuantity;
+    private BigDecimal orderQuantity;
 
-    public QuantityOverflowException(Integer usageQuantity, Integer orderQuantity) {
+    public QuantityOverflowException(BigDecimal usageQuantity, BigDecimal orderQuantity) {
         super("There is only %s, but total needed %s, please purchase again".formatted(orderQuantity, usageQuantity));
         this.usageQuantity = usageQuantity;
         this.orderQuantity = orderQuantity;
     }
 
-    public int getUsageQuantity() {
+    public BigDecimal getUsageQuantity() {
         return usageQuantity;
     }
 
-    public int getOrderQuantity() {
+    public BigDecimal getOrderQuantity() {
         return orderQuantity;
     }
 

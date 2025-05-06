@@ -16,7 +16,7 @@ public class SparePartUsage {
     private LocalDate usageDate;
     private Long orderId;
     private Long serviceId;
-    private Integer quantity;
+    private BigDecimal quantity;
     private BigDecimal soldPrice;
 
     // Default constructor
@@ -71,11 +71,11 @@ public class SparePartUsage {
         this.serviceId = serviceId;
     }
 
-    public Integer getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 

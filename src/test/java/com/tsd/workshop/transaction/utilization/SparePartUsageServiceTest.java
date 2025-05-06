@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,9 +20,9 @@ public class SparePartUsageServiceTest {
     @Test
     void allOkayForEditing() {
         SparePartUsageR2dbcRepository sparePartUsageR2dbcRepository = mock(SparePartUsageR2dbcRepository.class);
-        when(sparePartUsageR2dbcRepository.usageByOrderId(1000L)).thenReturn(Mono.just(0));
-        when(sparePartUsageR2dbcRepository.usageByOrderId(1010L)).thenReturn(Mono.just(0));
-        when(sparePartUsageR2dbcRepository.usageByOrderId(1020L)).thenReturn(Mono.just(0));
+        when(sparePartUsageR2dbcRepository.usageByOrderId(1000L)).thenReturn(Mono.just(BigDecimal.ZERO));
+        when(sparePartUsageR2dbcRepository.usageByOrderId(1010L)).thenReturn(Mono.just(BigDecimal.ZERO));
+        when(sparePartUsageR2dbcRepository.usageByOrderId(1020L)).thenReturn(Mono.just(BigDecimal.ZERO));
 
         SparePartUsageService sparePartUsageService = new SparePartUsageService();
         ReflectionTestUtils.setField(sparePartUsageService, "sparePartUsageR2dbcRepository", sparePartUsageR2dbcRepository);
@@ -44,9 +45,9 @@ public class SparePartUsageServiceTest {
     @Test
     void oneNotOkayForEditing() {
         SparePartUsageR2dbcRepository sparePartUsageR2dbcRepository = mock(SparePartUsageR2dbcRepository.class);
-        when(sparePartUsageR2dbcRepository.usageByOrderId(1000L)).thenReturn(Mono.just(0));
-        when(sparePartUsageR2dbcRepository.usageByOrderId(1010L)).thenReturn(Mono.just(0));
-        when(sparePartUsageR2dbcRepository.usageByOrderId(1020L)).thenReturn(Mono.just(1));
+        when(sparePartUsageR2dbcRepository.usageByOrderId(1000L)).thenReturn(Mono.just(BigDecimal.ZERO));
+        when(sparePartUsageR2dbcRepository.usageByOrderId(1010L)).thenReturn(Mono.just(BigDecimal.ZERO));
+        when(sparePartUsageR2dbcRepository.usageByOrderId(1020L)).thenReturn(Mono.just(BigDecimal.ONE));
 
         SparePartUsageService sparePartUsageService = new SparePartUsageService();
         ReflectionTestUtils.setField(sparePartUsageService, "sparePartUsageR2dbcRepository", sparePartUsageR2dbcRepository);

@@ -1,5 +1,6 @@
 package com.tsd.workshop.vehicle.data;
 
+import com.tsd.workshop.vehicle.VehicleStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.relational.core.mapping.Column;
@@ -20,6 +21,9 @@ public class Vehicle {
     private Long companyId;
     private LocalDate insuranceExpiryDate;
     private LocalDate roadTaxExpiryDate;
+    private LocalDate inspectionDueDate;
+
+    private VehicleStatus status;
 
     @ReadOnlyProperty
     private Integer latestMileageKm;
@@ -79,6 +83,22 @@ public class Vehicle {
 
     public void setRoadTaxExpiryDate(LocalDate roadTaxExpiryDate) {
         this.roadTaxExpiryDate = roadTaxExpiryDate;
+    }
+
+    public LocalDate getInspectionDueDate() {
+        return inspectionDueDate;
+    }
+
+    public void setInspectionDueDate(LocalDate inspectionDueDate) {
+        this.inspectionDueDate = inspectionDueDate;
+    }
+
+    public VehicleStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(VehicleStatus status) {
+        this.status = status;
     }
 
     public Integer getLatestMileageKm() {

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,7 @@ public class SparePartUsageService {
         return Flux.fromIterable(supplierSpareParts)
                 .flatMap(ssp -> sparePartUsageR2dbcRepository.usageByOrderId(ssp.getId())
                         .map(usage -> {
-                            if (usage > 0) {
+                            if (usage.compareTo(BigDecimal.ZERO) > 0) {
                                 throw new QuantityNotMatchedException(ssp, usage);
                             }
                             return true;
@@ -97,20 +98,20 @@ public class SparePartUsageService {
     }
 
     public Flux<Boolean> validateSparePartUsageByQuantity(List<MigData> migData) {
-        Map<Long, Integer> quantityByOrderId = migData.stream().collect(
+        Map<Long, Double> quantityByOrderId = migData.stream().collect(
                 Collectors.groupingBy(
                         MigData::getOrderId,
                         HashMap::new,
-                        Collectors.summingInt(MigData::getQuantity)));
+                        Collectors.summingDouble(md -> md.getQuantity() != null ? md.getQuantity().doubleValue() : 0.0d)));
 
         // usage quantity PLUS the service quantity, should not exceed the order quantity
        return Flux.fromIterable(quantityByOrderId.entrySet())
                 .flatMap(entry -> sparePartUsageR2dbcRepository.usageByOrderId(entry.getKey())
-                        .map(sum -> entry.getValue() + sum)
+                        .map(sum -> sum.add(BigDecimal.valueOf(entry.getValue())))
                         .flatMap(quantity ->
                                 supplierSparePartR2dbcRepository.quantityById(entry.getKey())
                                         .map(orderQuantity -> {
-                                            if (quantity > orderQuantity) {
+                                            if (quantity.compareTo(orderQuantity) > 0) {
                                                 throw new QuantityOverflowException(quantity, orderQuantity);
                                             }
                                             return true;

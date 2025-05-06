@@ -18,7 +18,7 @@ public class MigData {
     private LocalDate creationDate;
     private String itemDescription;
     private String partName;
-    private Integer quantity;
+    private BigDecimal quantity;
     private String unit;
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;
@@ -78,11 +78,11 @@ public class MigData {
         this.partName = partName;
     }
 
-    public Integer getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
 
@@ -177,6 +177,6 @@ public class MigData {
         this.quantity = spu.getQuantity();
         this.vehicleNo = spu.getVehicleNo();
         this.creationDate= spu.getUsageDate();
-        this.totalPrice = this.unitPrice.multiply(new BigDecimal(this.quantity));
+        this.totalPrice = this.unitPrice.multiply(this.quantity);
     }
 }
