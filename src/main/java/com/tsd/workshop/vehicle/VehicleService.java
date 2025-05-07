@@ -14,7 +14,8 @@ public class VehicleService {
     private VehicleRepository vehicleRepository;
 
     public Mono<Vehicle> saveVehicle(Vehicle vehicle) {
-        return vehicleRepository.save(vehicle);
+        return vehicleRepository.save(vehicle)
+                .flatMap(veh -> vehicleRepository.findById(vehicle.getId()));
     }
 
     public Mono<Vehicle> findById(Long id) {
