@@ -34,7 +34,7 @@ class TransactionControllerTest {
         });
 
         SparePartUsageService sparePartUsageService = mock(SparePartUsageService.class);
-        when(sparePartUsageService.validateSparePartUsageByQuantity(migDatasArgCaptor.capture())).thenReturn(Flux.just(true, true));
+        when(sparePartUsageService.validateMigDataSparePartUsageByQuantity(migDatasArgCaptor.capture())).thenReturn(Flux.just(true, true));
 
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
         ctx.register(DelegatingWebFluxConfiguration.class);
@@ -90,7 +90,7 @@ class TransactionControllerTest {
         });
 
         SparePartUsageService sparePartUsageService = mock(SparePartUsageService.class);
-        when(sparePartUsageService.validateSparePartUsageByQuantity(migDatasArgCaptor.capture())).thenReturn(Flux.just(true, true));
+        when(sparePartUsageService.validateMigDataSparePartUsageByQuantity(migDatasArgCaptor.capture())).thenReturn(Flux.just(true, true));
 
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
         ctx.register(DelegatingWebFluxConfiguration.class);

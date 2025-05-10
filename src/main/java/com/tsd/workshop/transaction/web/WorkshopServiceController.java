@@ -4,12 +4,19 @@ import com.tsd.workshop.transaction.TransactionService;
 import com.tsd.workshop.transaction.TransactionType;
 import com.tsd.workshop.transaction.VehicleOngoingServiceException;
 import com.tsd.workshop.transaction.data.WorkshopService;
+import com.tsd.workshop.transaction.utilization.SparePartUsageService;
+import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -18,6 +25,9 @@ public class WorkshopServiceController {
 
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private SparePartUsageService sparePartUsageService;
 
     @GetMapping("/{id}")
     public Mono<WorkshopService> getSingle(@PathVariable Long id) {
@@ -32,13 +42,25 @@ public class WorkshopServiceController {
     @GetMapping
     public Flux<WorkshopService> getWorkshopServices(
             @RequestParam(name = "vehicleId", required = false) Long vehicleId,
-            @RequestParam(name="type", required = false) TransactionType[] transactionTypes) {
+            @RequestParam(name="type", required = false) TransactionType[] transactionTypes,
+            @RequestParam(name="pageNumber", required = false, defaultValue = "-1") int pageNum,
+            @RequestParam(name="pageSize", required = false, defaultValue = "-1") int pageSize,
+            @RequestParam(name="year", required = false, defaultValue = "-1") int year,
+            @RequestParam(name="month", required = false, defaultValue = "-1") int month
+    ) {
         if (vehicleId != null) {
             return transactionService.findByVehicleId(vehicleId);
         }
         if (transactionTypes != null) {
             return transactionService.findLatestByTransactionTypes(transactionTypes);
         }
+        if (pageNum >= 0 && pageSize >= 0) {
+            return transactionService.findWithPages(pageNum, pageSize);
+        }
+        if (year > 0 && month > 0) {
+            return transactionService.findByYearAndMonth(year, month);
+        }
+
         return transactionService.findAll();
     }
 
@@ -52,7 +74,7 @@ public class WorkshopServiceController {
             return transactionService.completeService(workshopService);
         }
 
-        return transactionService.findByVehicleId(workshopService.getVehicleId())
+        Mono<WorkshopService> updateRoutine = transactionService.findByVehicleId(workshopService.getVehicleId())
                 .collectList()
                 .flatMap(wss -> {
                     if (!wss.isEmpty() && !Objects.equals(wss.getFirst().getId(), workshopService.getId())) {
@@ -61,6 +83,16 @@ public class WorkshopServiceController {
                     return Mono.empty();
                 })
                 .then(transactionService.save(workshopService));
+
+        // TODO to check spare part usage too
+        List<SparePartUsage> sparePartUsages = workshopService.getSparePartUsages();
+        if (sparePartUsages != null && !sparePartUsages.isEmpty()) {
+            return sparePartUsageService.validateSparePartUsageByQuantity(sparePartUsages)
+                    .all(Boolean.TRUE::equals)
+                    .flatMap(truly -> updateRoutine);
+        }
+
+        return updateRoutine;
     }
 
 }

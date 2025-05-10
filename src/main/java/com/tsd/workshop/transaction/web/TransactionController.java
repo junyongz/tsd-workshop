@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated(since = "2.0")
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
@@ -49,7 +50,7 @@ public class TransactionController {
             transactionsToSave.add(migData);
         }
 
-        return sparePartUsageService.validateSparePartUsageByQuantity(transactions)
+        return sparePartUsageService.validateMigDataSparePartUsageByQuantity(transactions)
                 .all(Boolean.TRUE::equals)
                 .flatMapMany(result -> migDataService.saveAll(transactionsToSave));
     }

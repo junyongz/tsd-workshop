@@ -28,6 +28,10 @@ public class VehicleService {
                 Sort.Order.asc("vehicleNo")));
     }
 
+    public Flux<Vehicle> findAllOfInternal() {
+        return vehicleRepository.findAllOfInternal();
+    }
+
     public Mono<Void> deleteById(Long id) {
         return vehicleRepository.deleteById(id);
     }

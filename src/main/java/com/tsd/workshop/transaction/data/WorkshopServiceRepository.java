@@ -1,6 +1,7 @@
 package com.tsd.workshop.transaction.data;
 
 import com.tsd.workshop.transaction.TransactionType;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import reactor.core.publisher.Flux;
@@ -16,4 +17,13 @@ public interface WorkshopServiceRepository extends R2dbcRepository<WorkshopServi
                 group by vehicle_no)
             """)
     Flux<WorkshopService> findLatestByTransactionTypes(TransactionType[] transactionTypes);
+
+    Flux<WorkshopService> findAllBy(Pageable page);
+
+    @Query(value = """
+                select * from workshop_service where extract(year from creation_date) = :year
+                and extract(month from creation_date) = :month order by completion_date desc nulls first,
+                creation_date desc
+            """)
+    Flux<WorkshopService> findByYearAndMonth(int year, int month);
 }

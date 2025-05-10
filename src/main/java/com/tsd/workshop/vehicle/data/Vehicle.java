@@ -21,17 +21,20 @@ public class Vehicle {
     private Long companyId;
     private LocalDate insuranceExpiryDate;
     private LocalDate roadTaxExpiryDate;
+
     private LocalDate inspectionDueDate;
+    private LocalDate trailerInspectionDueDate;
+
+    private LocalDate nextInspectionDate;
+    private LocalDate nextTrailerInspectionDate;
 
     private VehicleStatus status;
 
     @ReadOnlyProperty
     private Integer latestMileageKm;
 
-    // Default constructor
     public Vehicle() {}
 
-    // Parameterized constructor
     public Vehicle(String vehicleNo, String trailerNo) {
         this.vehicleNo = vehicleNo;
         this.trailerNo = trailerNo;
@@ -91,6 +94,30 @@ public class Vehicle {
 
     public void setInspectionDueDate(LocalDate inspectionDueDate) {
         this.inspectionDueDate = inspectionDueDate;
+    }
+
+    public LocalDate getTrailerInspectionDueDate() {
+        return trailerInspectionDueDate;
+    }
+
+    public void setTrailerInspectionDueDate(LocalDate trailerInspectionDueDate) {
+        this.trailerInspectionDueDate = trailerInspectionDueDate;
+    }
+
+    public LocalDate getNextInspectionDate() {
+        return nextInspectionDate;
+    }
+
+    public void setNextInspectionDate(LocalDate nextInspectionDate) {
+        this.nextInspectionDate = nextInspectionDate;
+    }
+
+    public LocalDate getNextTrailerInspectionDate() {
+        return nextTrailerInspectionDate;
+    }
+
+    public void setNextTrailerInspectionDate(LocalDate nextTrailerInspectionDate) {
+        this.nextTrailerInspectionDate = nextTrailerInspectionDate;
     }
 
     public VehicleStatus getStatus() {

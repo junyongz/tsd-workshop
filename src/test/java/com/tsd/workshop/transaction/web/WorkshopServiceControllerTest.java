@@ -2,6 +2,7 @@ package com.tsd.workshop.transaction.web;
 
 import com.tsd.workshop.transaction.TransactionService;
 import com.tsd.workshop.transaction.data.WorkshopService;
+import com.tsd.workshop.transaction.utilization.SparePartUsageService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -21,11 +22,13 @@ public class WorkshopServiceControllerTest {
     @Test
     void completeService() {
         TransactionService transactionService = mock(TransactionService.class);
+        SparePartUsageService sparePartUsageService = mock(SparePartUsageService.class);
 
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
         ctx.register(DelegatingWebFluxConfiguration.class);
         ctx.register(WorkshopServiceController.class);
         ctx.getDefaultListableBeanFactory().registerSingleton("transactionService", transactionService);
+        ctx.getDefaultListableBeanFactory().registerSingleton("sparePartUsageService", sparePartUsageService);
         ctx.refresh();
 
         WorkshopService ws = new WorkshopService();
@@ -50,11 +53,13 @@ public class WorkshopServiceControllerTest {
     @Test
     void completeServiceWithoutDate() {
         TransactionService transactionService = mock(TransactionService.class);
+        SparePartUsageService sparePartUsageService = mock(SparePartUsageService.class);
 
         AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
         ctx.register(DelegatingWebFluxConfiguration.class);
         ctx.register(WorkshopServiceController.class);
         ctx.getDefaultListableBeanFactory().registerSingleton("transactionService", transactionService);
+        ctx.getDefaultListableBeanFactory().registerSingleton("sparePartUsageService", sparePartUsageService);
         ctx.refresh();
 
         WorkshopService ws = new WorkshopService();

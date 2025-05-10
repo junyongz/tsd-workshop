@@ -97,7 +97,17 @@ public class SparePartUsageService {
                         }));
     }
 
-    public Flux<Boolean> validateSparePartUsageByQuantity(List<MigData> migData) {
+    public Flux<Boolean> validateSparePartUsageByQuantity(List<SparePartUsage> sparePartUsages) {
+        Map<Long, Double> quantityByOrderId = sparePartUsages.stream().collect(
+                Collectors.groupingBy(
+                        SparePartUsage::getOrderId,
+                        HashMap::new,
+                        Collectors.summingDouble(spu -> spu.getQuantity() != null ? spu.getQuantity().doubleValue() : 0.0d)));
+
+        return doValidateSparePartUsageByQuantity(quantityByOrderId);
+    }
+
+    public Flux<Boolean> validateMigDataSparePartUsageByQuantity(List<MigData> migData) {
         Map<Long, Double> quantityByOrderId = migData.stream().collect(
                 Collectors.groupingBy(
                         MigData::getOrderId,
@@ -105,7 +115,11 @@ public class SparePartUsageService {
                         Collectors.summingDouble(md -> md.getQuantity() != null ? md.getQuantity().doubleValue() : 0.0d)));
 
         // usage quantity PLUS the service quantity, should not exceed the order quantity
-       return Flux.fromIterable(quantityByOrderId.entrySet())
+        return doValidateSparePartUsageByQuantity(quantityByOrderId);
+    }
+
+    public Flux<Boolean> doValidateSparePartUsageByQuantity(Map<Long, Double> quantityByOrderId) {
+        return Flux.fromIterable(quantityByOrderId.entrySet())
                 .flatMap(entry -> sparePartUsageR2dbcRepository.usageByOrderId(entry.getKey())
                         .map(sum -> sum.add(BigDecimal.valueOf(entry.getValue())))
                         .flatMap(quantity ->

@@ -30,7 +30,11 @@ public class VehicleController {
     }
 
     @GetMapping
-    public Flux<Vehicle> getAllVehicles() {
+    public Flux<Vehicle> getAllVehicles(@RequestParam(value = "internal", required = false, defaultValue = "false") Boolean internal)
+    {
+        if (internal) {
+            return vehicleService.findAllOfInternal();
+        }
         return vehicleService.findAll();
     }
 

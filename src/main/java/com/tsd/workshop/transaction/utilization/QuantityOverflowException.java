@@ -11,7 +11,7 @@ public class QuantityOverflowException extends ErrorCodedRuntimeException {
     private BigDecimal orderQuantity;
 
     public QuantityOverflowException(BigDecimal usageQuantity, BigDecimal orderQuantity) {
-        super("There is only %s, but total needed %s, please purchase again".formatted(orderQuantity, usageQuantity));
+        super("There is only %s purchased, but total needed: %s, please purchase again".formatted(orderQuantity, usageQuantity));
         this.usageQuantity = usageQuantity;
         this.orderQuantity = orderQuantity;
     }

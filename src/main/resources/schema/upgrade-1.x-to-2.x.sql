@@ -117,3 +117,8 @@ create index idx_fleet_vehicle_no on vehicle_fleet_info (vehicle_no);
 
 alter table vehicle add column inspection_due_date date,
 add column status text;
+
+alter table vehicle add column trailer_inspection_due_date date;
+update vehicle set trailer_inspection_due_date = inspection_due_date where inspection_due_date is not null;
+
+alter table vehicle add column next_inspection_date date, add column next_trailer_inspection_date date;

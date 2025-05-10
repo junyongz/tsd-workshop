@@ -7,6 +7,7 @@ import com.tsd.workshop.transaction.data.WorkshopServiceSqlRepository;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +57,37 @@ public class TransactionService {
                 );
     }
 
+    public Flux<WorkshopService> findWithPages(int pageNum, int pageSize) {
+        return this.workshopServiceRepository.findAllBy(PageRequest.of(pageNum, pageSize)
+                        .withSort(Sort.by(
+                                Sort.Order.desc("completionDate").nullsFirst(),
+                                Sort.Order.desc("startDate"))))
+                .flatMap(ws ->
+                        Flux.zip(
+                                migDataRepository.findByServiceId(ws.getId()).collectList(),
+                                sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
+                        ).map(t -> {
+                            ws.setMigratedHandWrittenSpareParts(t.getT1());
+                            ws.setSparePartUsages(t.getT2());
+                            return ws;
+                        })
+                );
+    }
+
+    public Flux<WorkshopService> findByYearAndMonth(int year, int month) {
+        return this.workshopServiceRepository.findByYearAndMonth(year, month)
+                .flatMap(ws ->
+                        Flux.zip(
+                                migDataRepository.findByServiceId(ws.getId()).collectList(),
+                                sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
+                        ).map(t -> {
+                            ws.setMigratedHandWrittenSpareParts(t.getT1());
+                            ws.setSparePartUsages(t.getT2());
+                            return ws;
+                        })
+                );
+    }
+
     @Transactional
     public Mono<WorkshopService> save(WorkshopService workshopService) {
         return workshopServiceRepository.save(workshopService)
@@ -64,7 +96,6 @@ public class TransactionService {
                         spu.setServiceId(ws.getId());
                     }
 
-                    // TODO to check spare part usage too
                     return sparePartUsageRepository.saveAll(workshopService.getSparePartUsages())
                             .all(spu -> spu.getId() != null)
                             .map(b -> ws);
