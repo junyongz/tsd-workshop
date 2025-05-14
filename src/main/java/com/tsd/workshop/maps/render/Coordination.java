@@ -5,7 +5,7 @@ public class Coordination {
     double latitude;
     double longitude;
 
-    Coordination(double latitude, double longitude) {
+    public Coordination(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }

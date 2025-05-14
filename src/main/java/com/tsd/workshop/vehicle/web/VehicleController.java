@@ -1,9 +1,12 @@
 package com.tsd.workshop.vehicle.web;
 
+import com.tsd.workshop.maps.render.*;
 import com.tsd.workshop.vehicle.VehicleNoWrongFormatException;
 import com.tsd.workshop.vehicle.VehicleService;
 import com.tsd.workshop.vehicle.data.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,6 +18,9 @@ import java.util.regex.Pattern;
 public class VehicleController {
     @Autowired
     private VehicleService vehicleService;
+
+    @Autowired
+    private GoogleMapsStaticApiClient apiClient;
 
     @PostMapping
     public Mono<Vehicle> createVehicle(@RequestBody Vehicle vehicle) {
@@ -41,5 +47,24 @@ public class VehicleController {
     @DeleteMapping("/{id}")
     public Mono<Void> deleteVehicle(@PathVariable Long id) {
         return vehicleService.deleteById(id);
+    }
+
+    @GetMapping(value = "/{vehicleId}/gps", produces = MediaType.IMAGE_PNG_VALUE)
+    @ResponseBody
+    public Mono<Resource> drawMap(@PathVariable long vehicleId) {
+        return vehicleService.fleetInfosOfVehicle(vehicleId)
+                .sort((a, b) -> b.getRecordedDateTime().compareTo(a.getRecordedDateTime()))
+                .next()
+                .flatMap(fleetInfo -> apiClient.staticImage(
+                        new ApiParameters(Location.of(fleetInfo.getCoordination(), "14"),
+                                Size.of(960,500))
+                                .scale(Scale.TWO)
+                                .add(Marker.Builder.create()
+                                        .label("T")
+                                        .size(Marker.MarkerSize.MID)
+                                        .color("black")
+                                        .addLocation(fleetInfo.getCoordination())
+                                        .build())));
+
     }
 }

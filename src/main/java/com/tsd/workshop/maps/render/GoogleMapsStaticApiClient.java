@@ -35,6 +35,9 @@ public class GoogleMapsStaticApiClient {
     @Value("${google.maps.static.api.path.url}")
     private String pathUrl;
 
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+
     public Mono<Resource> staticImage(ApiParameters params) {
         String urlParams = params.toEncodedUrl() + "&key=" + this.apiKey;
 
@@ -45,7 +48,7 @@ public class GoogleMapsStaticApiClient {
 
             logger.info("finalUrl: {}", finalUrl);
 
-            WebClient webClient = WebClient.create();
+            WebClient webClient = webClientBuilder.build();
 
             return webClient.get()
                     .uri(URI.create(finalUrl))

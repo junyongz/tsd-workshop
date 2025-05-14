@@ -1,13 +1,17 @@
 package com.tsd.workshop.vehicle.data;
 
+import com.tsd.workshop.maps.render.Coordination;
 import com.tsd.workshop.vehicle.fleet.FleetInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Map;
 
 @Component
@@ -66,5 +70,30 @@ public class VehicleSqlRepository {
                 .bind(1, fleetInfo.getVehicleNo())
                 .fetch()
                 .rowsUpdated();
+    }
+
+    public Flux<FleetInfo> fleetInfos(Long vehicleId) {
+        return databaseClient.sql("""
+                select vehicle_no,
+                to_timestamp((data->>'recordedDateTime'), 'YYYY-MM-DD"T"HH24:MI:SS') recorded_date_time,
+                (data->>'mileageKm')::int mileage_km,
+                (data->>'remainingFuelLitre')::numeric remaining_fuel_litre,
+                (data->'coordination'->>'latitude')::numeric latitude,
+                (data->'coordination'->>'longitude')::numeric longitude
+                from vehicle_fleet_info where vehicle_id = :vehicle_id
+                """)
+                .bind(0, vehicleId)
+                .fetch()
+                .all()
+                .map(row ->
+                     new FleetInfo(
+                            (String) row.get("vehicle_no"),
+                             ((OffsetDateTime) row.get("recorded_date_time")).toLocalDateTime(),
+                            (Integer) row.get("mileage_km"),
+                             ((BigDecimal) row.get("remaining_fuel_litre")).doubleValue(),
+                            new Coordination(((BigDecimal) row.get("latitude")).doubleValue(), ((BigDecimal) row.get("longitude")).doubleValue())
+                    )
+                );
+
     }
 }
