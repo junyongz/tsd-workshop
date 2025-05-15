@@ -94,6 +94,21 @@ public class VehicleSqlRepository {
                             new Coordination(((BigDecimal) row.get("latitude")).doubleValue(), ((BigDecimal) row.get("longitude")).doubleValue())
                     )
                 );
+    }
 
+    public Mono<Long> staleFleetInfoCount(long vehicleId) {
+        return databaseClient.sql("""
+                select count(*) cnt from (
+                  select vehicle_no, vehicle_id,
+                  max(to_timestamp((data->>'recordedDateTime'), 'YYYY-MM-DD"T"HH24:MI:SS')) max_recorded
+                  from vehicle_fleet_info
+                  group by  vehicle_no, vehicle_id) latest_record
+                where vehicle_id = :vehicle_id
+                and max_recorded < now() - interval '15 minutes'
+                """)
+                .bind(0, vehicleId)
+                .fetch()
+                .first()
+                .map(row -> (Long) row.get("cnt"));
     }
 }

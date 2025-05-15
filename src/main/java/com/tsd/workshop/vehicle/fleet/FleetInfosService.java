@@ -28,19 +28,32 @@ public class FleetInfosService {
 
     @Scheduled(cron = "${vehicle.fleet.info.fetch.cron}")
     public void pollingFleetInfo() {
-        Flux.fromIterable(fetchers)
-                .flatMap(FleetInfoFetcher::fetch)
-                .flatMap(fleetInfo -> updateVehicleFleetInfo(fleetInfo).map(count -> {
-                    logger.info("{} record insert for data: {}", count, fleetInfo);
-                    return fleetInfo;
-                }))
-                .subscribeOn(Schedulers.boundedElastic())
-                .subscribe();
+        fetching().subscribeOn(Schedulers.boundedElastic()).subscribe();
     }
 
     @Transactional
     public Mono<Long> updateVehicleFleetInfo(FleetInfo fleetInfo) {
         return this.vehicleSqlRepository.updateVehicleLatestMileageKm(fleetInfo)
                 .flatMap(count -> this.vehicleSqlRepository.recordVehicleFleetInfo(fleetInfo));
+    }
+
+    @Transactional
+    public Mono<Void> pollForStaleFleetInfos(Long vehicleId) {
+        return this.vehicleSqlRepository.staleFleetInfoCount(vehicleId)
+                .flatMap(cnt -> {
+                    if (cnt > 0) {
+                        return fetching().then(Mono.empty());
+                    }
+                    return Mono.empty();
+                });
+    }
+
+    private Flux<FleetInfo> fetching() {
+        return Flux.fromIterable(fetchers)
+                .flatMap(FleetInfoFetcher::fetch)
+                .flatMap(fleetInfo -> updateVehicleFleetInfo(fleetInfo).map(count -> {
+                    logger.info("{} record insert for data: {}", count, fleetInfo);
+                    return fleetInfo;
+                }));
     }
 }

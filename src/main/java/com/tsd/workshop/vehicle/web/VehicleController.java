@@ -57,7 +57,7 @@ public class VehicleController {
                 .next()
                 .flatMap(fleetInfo -> apiClient.staticImage(
                         new ApiParameters(Location.of(fleetInfo.getCoordination(), "14"),
-                                Size.of(960,500))
+                                Size.of(640,640))
                                 .scale(Scale.TWO)
                                 .add(Marker.Builder.create()
                                         .label("T")

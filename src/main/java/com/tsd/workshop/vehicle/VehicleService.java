@@ -4,6 +4,7 @@ import com.tsd.workshop.vehicle.data.Vehicle;
 import com.tsd.workshop.vehicle.data.VehicleRepository;
 import com.tsd.workshop.vehicle.data.VehicleSqlRepository;
 import com.tsd.workshop.vehicle.fleet.FleetInfo;
+import com.tsd.workshop.vehicle.fleet.FleetInfosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,9 @@ public class VehicleService {
 
     @Autowired
     private VehicleSqlRepository vehicleSqlRepository;
+
+    @Autowired
+    private FleetInfosService fleetInfosService;
 
     public Mono<Vehicle> saveVehicle(Vehicle vehicle) {
         return vehicleRepository.save(vehicle)
@@ -42,6 +46,7 @@ public class VehicleService {
     }
 
     public Flux<FleetInfo> fleetInfosOfVehicle(Long vehicleId) {
-        return vehicleSqlRepository.fleetInfos(vehicleId);
+        return fleetInfosService.pollForStaleFleetInfos(vehicleId)
+                .thenMany(vehicleSqlRepository.fleetInfos(vehicleId));
     }
 }
