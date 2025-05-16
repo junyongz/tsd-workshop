@@ -24,7 +24,7 @@ public class VehicleController {
     private GoogleMapsStaticApiClient apiClient;
 
     @PostMapping
-    public Mono<Vehicle> createVehicle(@RequestBody Vehicle vehicle) {
+    public Mono<Vehicle> saveVehicle(@RequestBody Vehicle vehicle) {
         if (!Pattern.matches("([A-Z]{1,3})\\s(\\d{1,4})(\\s([A-Z]{1,2}))?", vehicle.getVehicleNo())) {
             throw new VehicleNoWrongFormatException(vehicle);
         }
@@ -60,14 +60,10 @@ public class VehicleController {
                 .next()
                 .flatMap(fleetInfo -> apiClient.staticImage(
                         new ApiParameters(Location.of(fleetInfo.getCoordination(), "14"),
-                                Size.of(640,640))
+                                Size.GOOGLE_MAP_MAX_SIZE)
                                 .scale(Scale.TWO)
-                                .add(Marker.Builder.create()
-                                        .label("T")
-                                        .size(Marker.MarkerSize.MID)
-                                        .color("black")
-                                        .addLocation(fleetInfo.getCoordination())
-                                        .build())));
+                                .add(Marker.Builder
+                                        .defaultTruckMarkerWith(fleetInfo.getCoordination()))));
 
     }
 }

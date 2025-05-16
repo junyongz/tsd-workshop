@@ -20,9 +20,9 @@ public class Marker {
     private Coordination[] locations;
 
     public static class Builder {
-        private Marker marker = new Marker();
+        private final Marker marker = new Marker();
 
-        private List<Coordination> locations = new ArrayList<>();
+        private final List<Coordination> locations = new ArrayList<>();
 
         public static Builder create() {
             return new Builder();
@@ -56,6 +56,14 @@ public class Marker {
         public Builder addLocation(Coordination location) {
             this.locations.add(location);
             return this;
+        }
+
+        public static Marker defaultTruckMarkerWith(Coordination location) {
+            return Marker.Builder.create()
+                    .label("T")
+                    .size(Marker.MarkerSize.MID)
+                    .color("black")
+                    .addLocation(location).build();
         }
 
         public Marker build() {

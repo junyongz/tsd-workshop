@@ -28,6 +28,7 @@ public class Vehicle {
     private LocalDate nextInspectionDate;
     private LocalDate nextTrailerInspectionDate;
 
+    @ReadOnlyProperty
     private VehicleStatus status;
 
     @ReadOnlyProperty

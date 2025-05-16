@@ -2,6 +2,8 @@ package com.tsd.workshop.maps.render;
 
 public class Size {
 
+    public static final Size GOOGLE_MAP_MAX_SIZE = Size.of(640, 640);
+
     private int horizontal;
 
     private int vertical;
