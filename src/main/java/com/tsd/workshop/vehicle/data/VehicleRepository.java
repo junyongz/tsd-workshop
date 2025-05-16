@@ -1,5 +1,6 @@
 package com.tsd.workshop.vehicle.data;
 
+import com.tsd.workshop.vehicle.VehicleStatus;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import reactor.core.publisher.Flux;
@@ -9,7 +10,8 @@ public interface VehicleRepository extends R2dbcRepository<Vehicle, Long> {
 
     @Query("""
     select * from vehicle where company_id in (select id from company where internal = true)
+    and (status = :vehicleStatus or status is null)
     order by latest_mileage_km desc, plate_no desc
     """)
-    Flux<Vehicle> findAllOfInternal();
+    Flux<Vehicle> findAllOfInternal(VehicleStatus vehicleStatus);
 }

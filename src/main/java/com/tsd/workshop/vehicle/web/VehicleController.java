@@ -3,6 +3,7 @@ package com.tsd.workshop.vehicle.web;
 import com.tsd.workshop.maps.render.*;
 import com.tsd.workshop.vehicle.VehicleNoWrongFormatException;
 import com.tsd.workshop.vehicle.VehicleService;
+import com.tsd.workshop.vehicle.VehicleStatus;
 import com.tsd.workshop.vehicle.data.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -36,10 +37,12 @@ public class VehicleController {
     }
 
     @GetMapping
-    public Flux<Vehicle> getAllVehicles(@RequestParam(value = "internal", required = false, defaultValue = "false") Boolean internal)
+    public Flux<Vehicle> getAllVehicles(
+            @RequestParam(value = "internal", required = false, defaultValue = "false") Boolean internal,
+            @RequestParam(value = "status", required = false, defaultValue = "ACTIVE") VehicleStatus vehicleStatus)
     {
         if (internal) {
-            return vehicleService.findAllOfInternal();
+            return vehicleService.findAllOfInternal(vehicleStatus);
         }
         return vehicleService.findAll();
     }

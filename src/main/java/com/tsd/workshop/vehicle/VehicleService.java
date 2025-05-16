@@ -37,8 +37,8 @@ public class VehicleService {
                 Sort.Order.asc("vehicleNo")));
     }
 
-    public Flux<Vehicle> findAllOfInternal() {
-        return vehicleRepository.findAllOfInternal();
+    public Flux<Vehicle> findAllOfInternal(VehicleStatus vehicleStatus) {
+        return vehicleRepository.findAllOfInternal(vehicleStatus);
     }
 
     public Mono<Void> deleteById(Long id) {
