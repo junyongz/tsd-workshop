@@ -22,16 +22,14 @@ public class CoordinationMappingController {
 
     @GetMapping(produces = MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
-    public Mono<Resource> drawMap(@RequestParam("lat") double latitude, @RequestParam("long") double longitude) {
+    public Mono<Resource> drawMap(@RequestParam("lat") double latitude,
+                                  @RequestParam("long") double longitude,
+                                  @RequestParam(value = "zoom", defaultValue = "14") int zoom) {
         return apiClient.staticImage(
-                new ApiParameters(Location.of(Coordination.of(latitude, longitude), "14"),
-                        Size.of(600,320))
+                new ApiParameters(Location.of(Coordination.of(latitude, longitude), String.valueOf(zoom)),
+                       Size.GOOGLE_MAP_MAX_SIZE)
                         .scale(Scale.TWO)
-                        .add(Marker.Builder.create()
-                                .label("T")
-                                .size(Marker.MarkerSize.MID)
-                                .color("blue")
-                                .addLocation(Coordination.of(latitude, longitude))
-                                .build()));
+                        .add(Marker.Builder.defaultTruckMarkerWith(
+                                Coordination.of(latitude, longitude))));
     }
 }

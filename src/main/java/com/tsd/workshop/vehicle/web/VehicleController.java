@@ -54,12 +54,12 @@ public class VehicleController {
 
     @GetMapping(value = "/{vehicleId}/gps", produces = MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
-    public Mono<Resource> drawMap(@PathVariable long vehicleId) {
+    public Mono<Resource> drawMap(@PathVariable long vehicleId, @RequestParam(value = "zoom", defaultValue = "13") int zoom) {
         return vehicleService.fleetInfosOfVehicle(vehicleId)
                 .sort((a, b) -> b.getRecordedDateTime().compareTo(a.getRecordedDateTime()))
                 .next()
                 .flatMap(fleetInfo -> apiClient.staticImage(
-                        new ApiParameters(Location.of(fleetInfo.getCoordination(), "14"),
+                        new ApiParameters(Location.of(fleetInfo.getCoordination(), String.valueOf(zoom)),
                                 Size.GOOGLE_MAP_MAX_SIZE)
                                 .scale(Scale.TWO)
                                 .add(Marker.Builder
