@@ -65,7 +65,6 @@ public class TransactionServiceTest {
         ws1.setVehicleId(1000L);
         ws1.setStartDate(LocalDate.of(2020, 12, 24));
         ws1.setCreationDate(LocalDate.of(2021, 1, 1));
-        ws1.setCompletionDate(LocalDate.of(2021, 1, 3));
         ws1.setMileageKm(180234);
 
         WorkshopService ws2 = new WorkshopService();
@@ -73,7 +72,6 @@ public class TransactionServiceTest {
         ws2.setVehicleId(1001L);
         ws2.setStartDate(LocalDate.of(2021, 12, 24));
         ws2.setCreationDate(LocalDate.of(2022, 1, 1));
-        ws2.setCompletionDate(LocalDate.of(2022, 1, 3));
         ws2.setMileageKm(90887);
 
         // for workshop
