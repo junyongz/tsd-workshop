@@ -1,15 +1,20 @@
 package com.tsd.workshop.transaction.data;
 
 import com.tsd.workshop.transaction.WorkshopServiceNotFoundException;
+import com.tsd.workshop.transaction.data.sql.ItemDescKeywords;
+import com.tsd.workshop.transaction.data.sql.PartNameKeywords;
+import com.tsd.workshop.transaction.data.sql.VehicleNoKeywords;
 import io.r2dbc.spi.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Transactional
 @Service
@@ -63,4 +68,21 @@ public class WorkshopServiceSqlRepository {
                 });
     }
 
+    // to use bindValues to prevent SQL injection
+    @Transactional(readOnly = true)
+    public Flux<Long> searchServiceIdsByKeywords(List<String> keywords) {
+        return databaseClient.sql("""
+                select id from workshop_service ws where exists (select 1 from spare_part_usages spu, mig_supplier_spare_parts mssp
+                where spu.service_id = ws.id and spu.order_id  = mssp.id
+                and %s )
+                or exists (select 1 from mig_data where service_id = ws.id and %s)
+                or %s
+                """.formatted(
+                        PartNameKeywords.of(keywords).toSql(),
+                        ItemDescKeywords.of(keywords).toSql(),
+                        VehicleNoKeywords.of(keywords).toSql()))
+                .fetch()
+                .all()
+                .map(row -> (Long) row.get("id"));
+    }
 }

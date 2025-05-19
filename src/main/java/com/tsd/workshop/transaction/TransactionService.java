@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Service
 public class TransactionService {
 
@@ -30,7 +32,16 @@ public class TransactionService {
     private WorkshopServiceSqlRepository workshopServiceSqlRepository;
 
     public Mono<WorkshopService> findById(Long id) {
-        return this.workshopServiceRepository.findById(id);
+        return this.workshopServiceRepository.findById(id)
+                .flatMap(ws ->
+                Mono.zip(
+                        migDataRepository.findByServiceId(ws.getId()).collectList(),
+                        sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
+                ).map(t -> {
+                    ws.setMigratedHandWrittenSpareParts(t.getT1());
+                    ws.setSparePartUsages(t.getT2());
+                    return ws;
+                }));
     }
 
     @Transactional
@@ -45,47 +56,31 @@ public class TransactionService {
         return this.workshopServiceRepository.findAll(Sort.by(
                     Sort.Order.desc("completionDate").nullsFirst(),
                     Sort.Order.desc("startDate")))
-                .flatMap(ws ->
-                        Flux.zip(
-                            migDataRepository.findByServiceId(ws.getId()).collectList(),
-                            sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
+                .flatMapSequential(ws -> {
+                    if (ws.getCompletionDate() == null) {
+                        return Flux.zip(
+                                migDataRepository.findByServiceId(ws.getId()).collectList(),
+                                sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
                         ).map(t -> {
                             ws.setMigratedHandWrittenSpareParts(t.getT1());
                             ws.setSparePartUsages(t.getT2());
                             return ws;
-                        })
-                );
+                        });
+                    }
+
+                    return Mono.just(ws);
+                });
     }
 
     public Flux<WorkshopService> findWithPages(int pageNum, int pageSize) {
-        return this.workshopServiceRepository.findAllBy(PageRequest.of(pageNum, pageSize)
+        return populateSpareParts(this.workshopServiceRepository.findAllBy(PageRequest.of(pageNum, pageSize)
                         .withSort(Sort.by(
                                 Sort.Order.desc("completionDate").nullsFirst(),
-                                Sort.Order.desc("startDate"))))
-                .flatMap(ws ->
-                        Flux.zip(
-                                migDataRepository.findByServiceId(ws.getId()).collectList(),
-                                sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
-                        ).map(t -> {
-                            ws.setMigratedHandWrittenSpareParts(t.getT1());
-                            ws.setSparePartUsages(t.getT2());
-                            return ws;
-                        })
-                );
+                                Sort.Order.desc("startDate")))));
     }
 
     public Flux<WorkshopService> findByYearAndMonth(int year, int month) {
-        return this.workshopServiceRepository.findByYearAndMonth(year, month)
-                .flatMap(ws ->
-                        Flux.zip(
-                                migDataRepository.findByServiceId(ws.getId()).collectList(),
-                                sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
-                        ).map(t -> {
-                            ws.setMigratedHandWrittenSpareParts(t.getT1());
-                            ws.setSparePartUsages(t.getT2());
-                            return ws;
-                        })
-                );
+        return populateSpareParts(this.workshopServiceRepository.findByYearAndMonth(year, month));
     }
 
     @Transactional
@@ -113,5 +108,23 @@ public class TransactionService {
     @Transactional
     public Mono<WorkshopService> completeService(WorkshopService ws) {
         return workshopServiceSqlRepository.completeWorkshopService(ws);
+    }
+
+    public Flux<WorkshopService> searchByKeywords(List<String> keywords) {
+        return populateSpareParts(workshopServiceSqlRepository.searchServiceIdsByKeywords(keywords)
+                .flatMap(id -> workshopServiceRepository.findById(id)));
+    }
+
+    public Flux<WorkshopService> populateSpareParts(Flux<WorkshopService> wss) {
+        return wss.flatMapSequential(ws ->
+                Flux.zip(
+                        migDataRepository.findByServiceId(ws.getId()).collectList(),
+                        sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
+                ).map(t -> {
+                    ws.setMigratedHandWrittenSpareParts(t.getT1());
+                    ws.setSparePartUsages(t.getT2());
+                    return ws;
+                })
+        );
     }
 }

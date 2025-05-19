@@ -7,10 +7,6 @@ import com.tsd.workshop.transaction.data.WorkshopService;
 import com.tsd.workshop.transaction.utilization.SparePartUsageService;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -46,7 +42,8 @@ public class WorkshopServiceController {
             @RequestParam(name="pageNumber", required = false, defaultValue = "-1") int pageNum,
             @RequestParam(name="pageSize", required = false, defaultValue = "-1") int pageSize,
             @RequestParam(name="year", required = false, defaultValue = "-1") int year,
-            @RequestParam(name="month", required = false, defaultValue = "-1") int month
+            @RequestParam(name="month", required = false, defaultValue = "-1") int month,
+            @RequestParam(name="keyword", required = false) List<String> keywords
     ) {
         if (vehicleId != null) {
             return transactionService.findByVehicleId(vehicleId);
@@ -59,6 +56,9 @@ public class WorkshopServiceController {
         }
         if (year > 0 && month > 0) {
             return transactionService.findByYearAndMonth(year, month);
+        }
+        if (keywords != null && !keywords.isEmpty()) {
+            return transactionService.searchByKeywords(keywords);
         }
 
         return transactionService.findAll();
@@ -84,7 +84,6 @@ public class WorkshopServiceController {
                 })
                 .then(transactionService.save(workshopService));
 
-        // TODO to check spare part usage too
         List<SparePartUsage> sparePartUsages = workshopService.getSparePartUsages();
         if (sparePartUsages != null && !sparePartUsages.isEmpty()) {
             return sparePartUsageService.validateSparePartUsageByQuantity(sparePartUsages)
