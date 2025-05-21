@@ -48,7 +48,11 @@ public class SupplierSparePartController {
     }
 
     @GetMapping
-    public Flux<SupplierSparePart> getAllSupplierSpareParts() {
+    public Flux<SupplierSparePart> getAllSupplierSpareParts(@RequestParam(value = "fetch", defaultValue = "ACTIVE") Fetch fetchMode) {
+        if (fetchMode == Fetch.ACTIVE) {
+            return supplierSparePartService.findWithUsage();
+        }
+
         return supplierSparePartService.findAll();
     }
 

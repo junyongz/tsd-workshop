@@ -58,6 +58,10 @@ public class SupplierSparePartService {
                 Sort.Order.desc("deliveryOrderNo")));
     }
 
+    public Flux<SupplierSparePart> findWithUsage() {
+        return supplierSparePartRepository.findWithUsageSupplierSparePartsBy();
+    }
+
     @Transactional
     public Mono<Void> deleteById(Long id) {
         return supplierSparePartR2dbcRepository.moveToDeletedTable(id)
