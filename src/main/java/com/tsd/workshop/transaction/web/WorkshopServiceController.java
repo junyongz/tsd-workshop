@@ -74,6 +74,10 @@ public class WorkshopServiceController {
             return transactionService.completeService(workshopService);
         }
 
+        if (op == Operation.NOTE) {
+            return transactionService.updateNote(workshopService);
+        }
+
         Mono<WorkshopService> updateRoutine = transactionService.findByVehicleId(workshopService.getVehicleId())
                 .collectList()
                 .flatMap(wss -> {

@@ -122,3 +122,12 @@ alter table vehicle add column trailer_inspection_due_date date;
 update vehicle set trailer_inspection_due_date = inspection_due_date where inspection_due_date is not null;
 
 alter table vehicle add column next_inspection_date date, add column next_trailer_inspection_date date;
+
+alter table workshop_service add column notes text;
+-- after alter workshop_service adding notes
+create table temp_deleted_workshop_service as
+select id, vehicle_id, vehicle_no, start_date, completion_date, creation_date, mileage_km, transaction_types, null::text as notes, spare_part_usages, deletion_date
+from deleted_workshop_service;
+drop table deleted_workshop_service;
+create table deleted_workshop_service as (select * from temp_deleted_workshop_service);
+drop table temp_deleted_workshop_service;

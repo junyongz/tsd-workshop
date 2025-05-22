@@ -68,6 +68,20 @@ public class WorkshopServiceSqlRepository {
                 });
     }
 
+    public Mono<WorkshopService> updateNoteFor(WorkshopService ws) {
+        return databaseClient.sql("update workshop_service set notes = :notes where id = :id")
+                .bind(0, ws.getNotes())
+                .bind(1, ws.getId())
+                .fetch()
+                .rowsUpdated()
+                .map(count -> {
+                    if (count == 0) {
+                        throw new WorkshopServiceNotFoundException(ws);
+                    }
+                    return ws;
+                });
+    }
+
     // to use bindValues to prevent SQL injection
     @Transactional(readOnly = true)
     public Flux<Long> searchServiceIdsByKeywords(List<String> keywords) {

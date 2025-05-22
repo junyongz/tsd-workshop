@@ -110,6 +110,11 @@ public class TransactionService {
         return workshopServiceSqlRepository.completeWorkshopService(ws);
     }
 
+    @Transactional
+    public Mono<WorkshopService> updateNote(WorkshopService ws) {
+        return workshopServiceSqlRepository.updateNoteFor(ws);
+    }
+
     public Flux<WorkshopService> searchByKeywords(List<String> keywords) {
         return populateSpareParts(workshopServiceSqlRepository.searchServiceIdsByKeywords(keywords)
                 .flatMap(id -> workshopServiceRepository.findById(id)));

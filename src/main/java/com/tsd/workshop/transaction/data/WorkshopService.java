@@ -38,6 +38,8 @@ public class WorkshopService {
     @InsertOnlyProperty
     private LocalDate creationDate = LocalDate.now();
 
+    private String notes;
+
     @Transient
     private List<WorkmanshipTask> tasks;
 
@@ -109,6 +111,14 @@ public class WorkshopService {
 
     public void setTransactionTypes(TransactionType[] transactionTypes) {
         this.transactionTypes = transactionTypes;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public List<WorkmanshipTask> getTasks() {
