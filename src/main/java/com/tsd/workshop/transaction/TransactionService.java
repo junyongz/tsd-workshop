@@ -4,6 +4,7 @@ import com.tsd.workshop.migration.data.MigDataRepository;
 import com.tsd.workshop.transaction.data.WorkshopService;
 import com.tsd.workshop.transaction.data.WorkshopServiceRepository;
 import com.tsd.workshop.transaction.data.WorkshopServiceSqlRepository;
+import com.tsd.workshop.transaction.media.WorkshopServiceMediaService;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,20 @@ public class TransactionService {
     @Autowired
     private WorkshopServiceSqlRepository workshopServiceSqlRepository;
 
+    @Autowired
+    private WorkshopServiceMediaService workshopServiceMediaService;
+
     public Mono<WorkshopService> findById(Long id) {
         return this.workshopServiceRepository.findById(id)
                 .flatMap(ws ->
                 Mono.zip(
                         migDataRepository.findByServiceId(ws.getId()).collectList(),
-                        sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
+                        sparePartUsageRepository.findByServiceId(ws.getId()).collectList(),
+                        workshopServiceMediaService.countByServiceId(ws.getId())
                 ).map(t -> {
                     ws.setMigratedHandWrittenSpareParts(t.getT1());
                     ws.setSparePartUsages(t.getT2());
+                    ws.setUploadedMediasCount(t.getT3());
                     return ws;
                 }));
     }
@@ -53,23 +59,28 @@ public class TransactionService {
     }
 
     public Flux<WorkshopService> findAll() {
-        return this.workshopServiceRepository.findAll(Sort.by(
-                    Sort.Order.desc("completionDate").nullsFirst(),
-                    Sort.Order.desc("startDate")))
-                .flatMapSequential(ws -> {
-                    if (ws.getCompletionDate() == null) {
-                        return Flux.zip(
-                                migDataRepository.findByServiceId(ws.getId()).collectList(),
-                                sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
-                        ).map(t -> {
-                            ws.setMigratedHandWrittenSpareParts(t.getT1());
-                            ws.setSparePartUsages(t.getT2());
-                            return ws;
-                        });
-                    }
+        return this.workshopServiceMediaService.groupedServiceIdCounts()
+                .flatMapMany(countByServiceId ->
+                    this.workshopServiceRepository.findAll(Sort.by(
+                                    Sort.Order.desc("completionDate").nullsFirst(),
+                                    Sort.Order.desc("startDate")))
+                            .flatMapSequential(ws -> {
+                                if (ws.getCompletionDate() == null) {
+                                    return Flux.zip(
+                                            migDataRepository.findByServiceId(ws.getId()).collectList(),
+                                            sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
+                                    ).map(t -> {
+                                        ws.setMigratedHandWrittenSpareParts(t.getT1());
+                                        ws.setSparePartUsages(t.getT2());
+                                        ws.setUploadedMediasCount(countByServiceId.getOrDefault(ws.getId(), 0));
+                                        return ws;
+                                    });
+                                }
 
-                    return Mono.just(ws);
-                });
+                                ws.setUploadedMediasCount(countByServiceId.getOrDefault(ws.getId(), 0));
+                                return Mono.just(ws);
+                            })
+                );
     }
 
     public Flux<WorkshopService> findWithPages(int pageNum, int pageSize) {
@@ -124,10 +135,12 @@ public class TransactionService {
         return wss.flatMapSequential(ws ->
                 Flux.zip(
                         migDataRepository.findByServiceId(ws.getId()).collectList(),
-                        sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
+                        sparePartUsageRepository.findByServiceId(ws.getId()).collectList(),
+                        workshopServiceMediaService.countByServiceId(ws.getId())
                 ).map(t -> {
                     ws.setMigratedHandWrittenSpareParts(t.getT1());
                     ws.setSparePartUsages(t.getT2());
+                    ws.setUploadedMediasCount(t.getT3());
                     return ws;
                 })
         );

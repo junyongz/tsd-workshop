@@ -10,6 +10,7 @@ public interface WorkshopServiceRepository extends R2dbcRepository<WorkshopServi
 
     Flux<WorkshopService> findByVehicleIdAndCompletionDateIsNull(Long vehicleId);
 
+    // TODO what could happen if same vehicle have more than 1 service at same day
     @Query(value = """
                 select * from workshop_service where (start_date, vehicle_no) in (
                 select max(start_date) last_date, vehicle_no from workshop_service

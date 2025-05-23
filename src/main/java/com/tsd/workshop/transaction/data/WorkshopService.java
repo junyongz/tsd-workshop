@@ -49,6 +49,9 @@ public class WorkshopService {
     @Transient
     private List<MigData> migratedHandWrittenSpareParts;
 
+    @Transient
+    private Integer uploadedMediasCount;
+
     public Long getId() {
         return id;
     }
@@ -143,5 +146,13 @@ public class WorkshopService {
 
     public void setMigratedHandWrittenSpareParts(List<MigData> migratedHandWrittenSpareParts) {
         this.migratedHandWrittenSpareParts = migratedHandWrittenSpareParts;
+    }
+
+    public Integer getUploadedMediasCount() {
+        return uploadedMediasCount;
+    }
+
+    public void setUploadedMediasCount(Integer uploadedMediasCount) {
+        this.uploadedMediasCount = uploadedMediasCount;
     }
 }

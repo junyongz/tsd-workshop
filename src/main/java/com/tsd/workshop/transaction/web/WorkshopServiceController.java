@@ -4,14 +4,25 @@ import com.tsd.workshop.transaction.TransactionService;
 import com.tsd.workshop.transaction.TransactionType;
 import com.tsd.workshop.transaction.VehicleOngoingServiceException;
 import com.tsd.workshop.transaction.data.WorkshopService;
+import com.tsd.workshop.transaction.media.WorkshopServiceMedia;
+import com.tsd.workshop.transaction.media.WorkshopServiceMediaService;
+import com.tsd.workshop.transaction.media.WrongMediaOwnerException;
 import com.tsd.workshop.transaction.utilization.SparePartUsageService;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,6 +35,9 @@ public class WorkshopServiceController {
 
     @Autowired
     private SparePartUsageService sparePartUsageService;
+
+    @Autowired
+    private WorkshopServiceMediaService workshopServiceMediaService;
 
     @GetMapping("/{id}")
     public Mono<WorkshopService> getSingle(@PathVariable Long id) {
@@ -98,4 +112,57 @@ public class WorkshopServiceController {
         return updateRoutine;
     }
 
+    @PostMapping(value = "/{serviceId}/medias")
+    public Mono<Long> uploadMedia(@PathVariable Long serviceId, @RequestPart("file") Mono<FilePart> filePartMono) {
+        return filePartMono.flatMap(filePart -> {
+
+            return filePart.content().reduce(DataBuffer::write)
+                .map(dataBuffer -> {
+                    byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                    dataBuffer.read(bytes);
+                    DataBufferUtils.release(dataBuffer);
+                    return bytes;
+                })
+                .map(bytes -> {
+                    WorkshopServiceMedia media = new WorkshopServiceMedia();
+                    media.setServiceId(serviceId);
+                    media.setFileName(filePart.filename());
+                    media.setFileSize(bytes.length);
+                    media.setMedia(bytes);
+                    media.setMediaType(filePart.headers().getContentType().toString());
+                    media.setAddedTimestamp(LocalDateTime.now());
+                    return media;
+                })
+                .flatMap(this.workshopServiceMediaService::saveMedia)
+                .map(WorkshopServiceMedia::getId);
+        }) ;
+    }
+
+    @DeleteMapping(value = "/{serviceId}/medias/{mediaId}")
+    public Mono<Long> deleteMedia(@PathVariable Long serviceId, @PathVariable("mediaId") Long mediaId) {
+        return workshopServiceMediaService.deleteMedia(serviceId, mediaId)
+                .then(Mono.empty());
+    }
+
+    @GetMapping(value = "/{serviceId}/medias")
+    public Flux<WorkshopServiceMedia> fetchMedias(@PathVariable Long serviceId) {
+        return workshopServiceMediaService.getMediaByServiceId(serviceId);
+    }
+
+    @GetMapping(value = "/{serviceId}/medias/{mediaId}/data")
+    public Mono<ResponseEntity<DataBuffer>> fetchMediaBinary(@PathVariable Long serviceId, @PathVariable Long mediaId) {
+        DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
+        return workshopServiceMediaService.getMediaBinary(serviceId, mediaId)
+                .map(media -> {
+                    if (!media.getServiceId().equals(serviceId)) {
+                        throw new WrongMediaOwnerException(mediaId, serviceId);
+                    }
+
+                    DataBuffer buffer = bufferFactory.wrap(media.getMedia());
+                    return ResponseEntity.ok()
+                            .contentType(MediaType.parseMediaType(media.getMediaType()))
+                            .body(buffer);
+                })
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
 }

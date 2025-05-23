@@ -131,3 +131,9 @@ from deleted_workshop_service;
 drop table deleted_workshop_service;
 create table deleted_workshop_service as (select * from temp_deleted_workshop_service);
 drop table temp_deleted_workshop_service;
+
+-- support upload media
+create table workshop_service_media (id int8, service_id int8, file_name varchar, file_size numeric, added_timestamp timestamp, media bytea, media_type varchar);
+create sequence workshop_service_media_seq owned by workshop_service_media.id;
+ALTER TABLE workshop_service_media ALTER COLUMN id SET DEFAULT nextval('workshop_service_media_seq');
+create index idx_media_service_id on workshop_service_media(service_id);

@@ -4,6 +4,7 @@ import com.tsd.workshop.migration.data.MigData;
 import com.tsd.workshop.migration.data.MigDataRepository;
 import com.tsd.workshop.transaction.data.WorkshopService;
 import com.tsd.workshop.transaction.data.WorkshopServiceRepository;
+import com.tsd.workshop.transaction.media.WorkshopServiceMediaService;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -120,10 +122,14 @@ public class TransactionServiceTest {
 
         when(spuRepo.findByServiceId(1001L)).thenReturn(Flux.just(spu3, spu4));
 
+        WorkshopServiceMediaService workshopServiceMediaService = mock(WorkshopServiceMediaService.class);
+        when(workshopServiceMediaService.groupedServiceIdCounts()).thenReturn(Mono.just(Collections.emptyMap()));
+
         TransactionService txService = new TransactionService();
         ReflectionTestUtils.setField(txService, "workshopServiceRepository", wsRepo);
         ReflectionTestUtils.setField(txService, "sparePartUsageRepository", spuRepo);
         ReflectionTestUtils.setField(txService, "migDataRepository", mdRepo);
+        ReflectionTestUtils.setField(txService, "workshopServiceMediaService", workshopServiceMediaService);
 
         StepVerifier.create(txService.findAll())
                 .expectNextMatches(wss ->
