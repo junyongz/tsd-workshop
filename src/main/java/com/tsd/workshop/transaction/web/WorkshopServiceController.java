@@ -1,5 +1,6 @@
 package com.tsd.workshop.transaction.web;
 
+import com.tsd.workshop.transaction.State;
 import com.tsd.workshop.transaction.TransactionService;
 import com.tsd.workshop.transaction.TransactionType;
 import com.tsd.workshop.transaction.VehicleOngoingServiceException;
@@ -57,7 +58,8 @@ public class WorkshopServiceController {
             @RequestParam(name="pageSize", required = false, defaultValue = "-1") int pageSize,
             @RequestParam(name="year", required = false, defaultValue = "-1") int year,
             @RequestParam(name="month", required = false, defaultValue = "-1") int month,
-            @RequestParam(name="keyword", required = false) List<String> keywords
+            @RequestParam(name="keyword", required = false) List<String> keywords,
+            @RequestParam(name="state", required = false) State state
     ) {
         if (vehicleId != null) {
             return transactionService.findByVehicleId(vehicleId);
@@ -73,6 +75,9 @@ public class WorkshopServiceController {
         }
         if (keywords != null && !keywords.isEmpty()) {
             return transactionService.searchByKeywords(keywords);
+        }
+        if (state != null) {
+            return transactionService.findByState(state);
         }
 
         return transactionService.findAll();

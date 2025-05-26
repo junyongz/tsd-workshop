@@ -126,6 +126,16 @@ public class TransactionService {
         return workshopServiceSqlRepository.updateNoteFor(ws);
     }
 
+    public Flux<WorkshopService> findByState(State state) {
+        if (state == State.PENDING) {
+            return workshopServiceRepository.findByCompletionDateIsNull();
+        }
+        else if (state == State.DONE) {
+            return workshopServiceRepository.findByCompletionDateIsNotNull();
+        }
+        return Flux.empty();
+    }
+
     public Flux<WorkshopService> searchByKeywords(List<String> keywords) {
         return populateSpareParts(workshopServiceSqlRepository.searchServiceIdsByKeywords(keywords)
                 .flatMap(id -> workshopServiceRepository.findById(id)));

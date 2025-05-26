@@ -24,8 +24,14 @@ public class SupplierController {
     }
 
     @GetMapping
-    public Flux<Supplier> getAllSuppliers() {
-        return supplierService.findAll();
+    public Flux<Supplier> getAllSuppliers(@RequestParam(value = "sort", required = false, defaultValue = "RECENT") SortBy sortBy) {
+        if (sortBy == SortBy.RECENT) {
+            return supplierService.findAll();
+        }
+        else if (sortBy == SortBy.NAME) {
+            return supplierService.findAllSortByName();
+        }
+        return Flux.empty();
     }
 
     @DeleteMapping("/{id}")

@@ -27,4 +27,9 @@ public interface WorkshopServiceRepository extends R2dbcRepository<WorkshopServi
                 creation_date desc
             """)
     Flux<WorkshopService> findByYearAndMonth(int year, int month);
+
+    Flux<WorkshopService> findByCompletionDateIsNull();
+
+    // be careful of what you wish for using this method!
+    Flux<WorkshopService> findByCompletionDateIsNotNull();
 }

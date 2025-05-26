@@ -3,6 +3,7 @@ package com.tsd.workshop.supplier;
 import com.tsd.workshop.supplier.data.Supplier;
 import com.tsd.workshop.supplier.data.SupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,6 +26,10 @@ public class SupplierService {
 
     public Flux<Supplier> findAll() {
         return supplierRepository.findByRecentOrdered();
+    }
+
+    public Flux<Supplier> findAllSortByName() {
+        return supplierRepository.findAll(Sort.by(Sort.Order.asc("supplierName")));
     }
 
     public Mono<Void> deleteById(Long id) {
