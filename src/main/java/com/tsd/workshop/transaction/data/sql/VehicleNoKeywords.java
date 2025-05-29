@@ -2,6 +2,7 @@ package com.tsd.workshop.transaction.data.sql;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class VehicleNoKeywords {
 
@@ -16,9 +17,10 @@ public class VehicleNoKeywords {
     }
 
     public String toSql() {
-        return keywords.stream()
-                .map("vehicle_no = '%s'"::formatted)
-                .collect(Collectors.joining(" or "));
+        return "AND vehicle_no in (%s)"
+                .formatted(IntStream.range(0, keywords.size())
+                        .mapToObj(v -> ":k" + v)
+                        .collect(Collectors.joining(",")));
     }
 
 }
