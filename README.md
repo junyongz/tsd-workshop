@@ -23,8 +23,13 @@ To copy bundled SPA over here (after `npm run build`)
 
 ## Roadmap
 
-1. **1.0** to mimic migrated data from excel (for both services & spare parts orders), support mapping of between truck and spare parts from order
-2. 2.0 migrate to new data model, service to consists of spare part usage
-3. 2.1 data fields validation
-4. 2.5 workmanship tasks creation
-5. 3.0 proactive spare parts and standard service alert
+1. 1.0 to mimic migrated data from excel (for both services & spare parts orders), support mapping of between truck and spare parts from order
+2. **2.0** migrate to new data model, service to consists of spare part usage, data fields validation
+4. 3.0 workmanship tasks creation
+5. 4.0 spare part management and proactive alert
+
+## Support This Project
+
+If you find this project useful, consider donating!
+
+[Stripe Donate](https://buy.stripe.com/7sY5kCbtj2dR8b1cCRfEk00)
