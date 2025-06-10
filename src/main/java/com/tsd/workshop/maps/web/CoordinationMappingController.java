@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import reactor.core.publisher.Mono;
 
 @Controller
-@RequestMapping("/mapping")
+@RequestMapping("/api/mapping")
 @ConditionalOnProperty(name = "google.maps.integration.enabled", havingValue = "true")
 public class CoordinationMappingController {
 

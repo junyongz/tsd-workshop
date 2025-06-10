@@ -44,7 +44,7 @@ public class SupplierSparePartControllerTest {
         WebTestClient webTestClient = WebTestClient
                 .bindToApplicationContext(ctx)
                 .build();
-        webTestClient.post().uri("/supplier-spare-parts")
+        webTestClient.post().uri("/api/supplier-spare-parts")
                 .body(BodyInserters.fromValue("""
                         [{"id":20667,"deliveryOrderNo":"7776662","computedDate":null,"invoiceDate":"2025-04-03",
                         "itemCode":"WG-2203210410","partName":"WG-2203210410 CYLINDER PUMP , GEAR SHIFT","particular":null,
@@ -91,7 +91,7 @@ public class SupplierSparePartControllerTest {
         WebTestClient webTestClient = WebTestClient
                 .bindToApplicationContext(ctx)
                 .build();
-        webTestClient.post().uri("/supplier-spare-parts")
+        webTestClient.post().uri("/api/supplier-spare-parts")
                 .body(BodyInserters.fromValue("""
                         [{"id":20667,"deliveryOrderNo":"7776662","computedDate":null,"invoiceDate":"2025-04-03",
                         "itemCode":"WG-2203210410","partName":"WG-2203210410 CYLINDER PUMP , GEAR SHIFT","particular":null,
@@ -141,7 +141,7 @@ public class SupplierSparePartControllerTest {
         WebTestClient webTestClient = WebTestClient
                 .bindToApplicationContext(ctx)
                 .build();
-        webTestClient.post().uri("/supplier-spare-parts")
+        webTestClient.post().uri("/api/supplier-spare-parts")
                 .body(BodyInserters.fromValue("""
                         [{"id":20667,"deliveryOrderNo":"7776662","computedDate":null,"invoiceDate":"2025-04-03",
                         "itemCode":"WG-2203210410","partName":"WG-2203210410 CYLINDER PUMP , GEAR SHIFT","particular":null,

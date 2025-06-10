@@ -52,6 +52,12 @@ public class WorkshopService {
     @Transient
     private Integer uploadedMediasCount;
 
+    @Transient
+    private Integer sparePartsCount;
+
+    @Transient
+    private Integer workmanshipTasksCount;
+
     public Long getId() {
         return id;
     }
@@ -154,5 +160,21 @@ public class WorkshopService {
 
     public void setUploadedMediasCount(Integer uploadedMediasCount) {
         this.uploadedMediasCount = uploadedMediasCount;
+    }
+
+    public Integer getSparePartsCount() {
+        return sparePartsCount;
+    }
+
+    public void setSparePartsCount(Integer sparePartsCount) {
+        this.sparePartsCount = sparePartsCount;
+    }
+
+    public Integer getWorkmanshipTasksCount() {
+        return workmanshipTasksCount;
+    }
+
+    public void setWorkmanshipTasksCount(Integer workmanshipTasksCount) {
+        this.workmanshipTasksCount = workmanshipTasksCount;
     }
 }

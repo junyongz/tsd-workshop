@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @RestController
-@RequestMapping("/supplier-spare-parts")
+@RequestMapping("/api/supplier-spare-parts")
 public class SupplierSparePartController {
     @Autowired
     private SupplierSparePartService supplierSparePartService;

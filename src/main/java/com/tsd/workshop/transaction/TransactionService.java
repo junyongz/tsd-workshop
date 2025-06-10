@@ -7,6 +7,9 @@ import com.tsd.workshop.transaction.data.WorkshopServiceSqlRepository;
 import com.tsd.workshop.transaction.media.WorkshopServiceMediaService;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
+import com.tsd.workshop.workmanship.WrongWorkmanshipOwnerException;
+import com.tsd.workshop.workmanship.data.WorkmanshipTask;
+import com.tsd.workshop.workmanship.data.WorkmanshipTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,6 +33,9 @@ public class TransactionService {
     private SparePartUsageRepository sparePartUsageRepository;
 
     @Autowired
+    private WorkmanshipTaskRepository workmanshipTaskRepository;
+
+    @Autowired
     private WorkshopServiceSqlRepository workshopServiceSqlRepository;
 
     @Autowired
@@ -39,13 +45,17 @@ public class TransactionService {
         return this.workshopServiceRepository.findById(id)
                 .flatMap(ws ->
                 Mono.zip(
-                        migDataRepository.findByServiceId(ws.getId()).collectList(),
-                        sparePartUsageRepository.findByServiceId(ws.getId()).collectList(),
-                        workshopServiceMediaService.countByServiceId(ws.getId())
+                    migDataRepository.findByServiceId(ws.getId()).collectList(),
+                    sparePartUsageRepository.findByServiceId(ws.getId()).collectList(),
+                    workshopServiceMediaService.countByServiceId(ws.getId()),
+                    workmanshipTaskRepository.findByServiceId(ws.getId()).collectList()
                 ).map(t -> {
                     ws.setMigratedHandWrittenSpareParts(t.getT1());
                     ws.setSparePartUsages(t.getT2());
+                    ws.setTasks(t.getT4());
                     ws.setUploadedMediasCount(t.getT3());
+                    ws.setSparePartsCount(t.getT2().size());
+                    ws.setWorkmanshipTasksCount(t.getT4().size());
                     return ws;
                 }));
     }
@@ -55,6 +65,7 @@ public class TransactionService {
         return this.workshopServiceSqlRepository.moveToDeletedTable(id)
                 .flatMap( count -> this.workshopServiceRepository.deleteById(id))
                 .then(sparePartUsageRepository.deleteByServiceId(id))
+                .then(workmanshipTaskRepository.deleteByServiceId(id))
                 .then(Mono.just(id));
     }
 
@@ -67,12 +78,16 @@ public class TransactionService {
                             .flatMapSequential(ws -> {
                                 if (ws.getCompletionDate() == null) {
                                     return Flux.zip(
-                                            migDataRepository.findByServiceId(ws.getId()).collectList(),
-                                            sparePartUsageRepository.findByServiceId(ws.getId()).collectList()
+                                        migDataRepository.findByServiceId(ws.getId()).collectList(),
+                                        sparePartUsageRepository.findByServiceId(ws.getId()).collectList(),
+                                        workmanshipTaskRepository.findByServiceId(ws.getId()).collectList()
                                     ).map(t -> {
                                         ws.setMigratedHandWrittenSpareParts(t.getT1());
                                         ws.setSparePartUsages(t.getT2());
+                                        ws.setTasks(t.getT3());
                                         ws.setUploadedMediasCount(countByServiceId.getOrDefault(ws.getId(), 0));
+                                        ws.setSparePartsCount(t.getT2().size());
+                                        ws.setWorkmanshipTasksCount(t.getT3().size());
                                         return ws;
                                     });
                                 }
@@ -84,14 +99,14 @@ public class TransactionService {
     }
 
     public Flux<WorkshopService> findWithPages(int pageNum, int pageSize) {
-        return populateSpareParts(this.workshopServiceRepository.findAllBy(PageRequest.of(pageNum, pageSize)
+        return populateAssociations(this.workshopServiceRepository.findAllBy(PageRequest.of(pageNum, pageSize)
                         .withSort(Sort.by(
                                 Sort.Order.desc("completionDate").nullsFirst(),
                                 Sort.Order.desc("startDate")))));
     }
 
     public Flux<WorkshopService> findByYearAndMonth(int year, int month) {
-        return populateSpareParts(this.workshopServiceRepository.findByYearAndMonth(year, month));
+        return populateAssociations(this.workshopServiceRepository.findByYearAndMonth(year, month));
     }
 
     @Transactional
@@ -101,10 +116,16 @@ public class TransactionService {
                     for (SparePartUsage spu : workshopService.getSparePartUsages()) {
                         spu.setServiceId(ws.getId());
                     }
+                    for (WorkmanshipTask task : workshopService.getTasks()) {
+                        task.setServiceId(ws.getId());
+                    }
 
                     return sparePartUsageRepository.saveAll(workshopService.getSparePartUsages())
                             .all(spu -> spu.getId() != null)
-                            .map(b -> ws);
+                            .map(b -> ws)
+                            .flatMapMany(wss -> workmanshipTaskRepository.saveAll(workshopService.getTasks()))
+                            .all(task -> task.getId() != null)
+                            .map( b -> ws);
                 });
     }
 
@@ -137,22 +158,38 @@ public class TransactionService {
     }
 
     public Flux<WorkshopService> searchByKeywords(List<String> keywords) {
-        return populateSpareParts(workshopServiceSqlRepository.searchServiceIdsByKeywords(keywords)
-                .flatMap(id -> workshopServiceRepository.findById(id)));
+        return populateAssociations(workshopServiceSqlRepository.searchServiceIdsByKeywords(keywords)
+                .flatMap(workshopServiceRepository::findById));
     }
 
-    public Flux<WorkshopService> populateSpareParts(Flux<WorkshopService> wss) {
+    @Transactional
+    public Mono<Long> deleteTask(Long serviceId, Long taskId) {
+        return workmanshipTaskRepository.findById(taskId)
+                .flatMap(task -> {
+                    if (!serviceId.equals(task.getServiceId())) {
+                        throw new WrongWorkmanshipOwnerException(task, serviceId);
+                    }
+                    return workmanshipTaskRepository.deleteById(taskId).then(Mono.just(taskId));
+                });
+    }
+
+    private Flux<WorkshopService> populateAssociations(Flux<WorkshopService> wss) {
         return wss.flatMapSequential(ws ->
                 Flux.zip(
-                        migDataRepository.findByServiceId(ws.getId()).collectList(),
-                        sparePartUsageRepository.findByServiceId(ws.getId()).collectList(),
-                        workshopServiceMediaService.countByServiceId(ws.getId())
+                    migDataRepository.findByServiceId(ws.getId()).collectList(),
+                    sparePartUsageRepository.findByServiceId(ws.getId()).collectList(),
+                    workmanshipTaskRepository.findByServiceId(ws.getId()).collectList(),
+                    workshopServiceMediaService.countByServiceId(ws.getId())
                 ).map(t -> {
                     ws.setMigratedHandWrittenSpareParts(t.getT1());
                     ws.setSparePartUsages(t.getT2());
-                    ws.setUploadedMediasCount(t.getT3());
+                    ws.setTasks(t.getT3());
+                    ws.setUploadedMediasCount(t.getT4());
+                    ws.setSparePartsCount(t.getT2().size());
+                    ws.setWorkmanshipTasksCount(t.getT3().size());
                     return ws;
                 })
         );
     }
+
 }

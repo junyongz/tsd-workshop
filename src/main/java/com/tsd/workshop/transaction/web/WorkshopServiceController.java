@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/workshop-services")
+@RequestMapping("/api/workshop-services")
 public class WorkshopServiceController {
 
     @Autowired
@@ -119,28 +119,27 @@ public class WorkshopServiceController {
 
     @PostMapping(value = "/{serviceId}/medias")
     public Mono<Long> uploadMedia(@PathVariable Long serviceId, @RequestPart("file") Mono<FilePart> filePartMono) {
-        return filePartMono.flatMap(filePart -> {
-
-            return filePart.content().reduce(DataBuffer::write)
-                .map(dataBuffer -> {
-                    byte[] bytes = new byte[dataBuffer.readableByteCount()];
-                    dataBuffer.read(bytes);
-                    DataBufferUtils.release(dataBuffer);
-                    return bytes;
-                })
-                .map(bytes -> {
-                    WorkshopServiceMedia media = new WorkshopServiceMedia();
-                    media.setServiceId(serviceId);
-                    media.setFileName(filePart.filename());
-                    media.setFileSize(bytes.length);
-                    media.setMedia(bytes);
-                    media.setMediaType(filePart.headers().getContentType().toString());
-                    media.setAddedTimestamp(LocalDateTime.now());
-                    return media;
-                })
-                .flatMap(this.workshopServiceMediaService::saveMedia)
-                .map(WorkshopServiceMedia::getId);
-        }) ;
+        return filePartMono.flatMap(filePart ->
+                filePart.content().reduce(DataBuffer::write)
+                    .map(dataBuffer -> {
+                        byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                        dataBuffer.read(bytes);
+                        DataBufferUtils.release(dataBuffer);
+                        return bytes;
+                    })
+                    .map(bytes -> {
+                        WorkshopServiceMedia media = new WorkshopServiceMedia();
+                        media.setServiceId(serviceId);
+                        media.setFileName(filePart.filename());
+                        media.setFileSize(bytes.length);
+                        media.setMedia(bytes);
+                        media.setMediaType(filePart.headers().getContentType().toString());
+                        media.setAddedTimestamp(LocalDateTime.now());
+                        return media;
+                    })
+                    .flatMap(this.workshopServiceMediaService::saveMedia)
+                    .map(WorkshopServiceMedia::getId)
+        ) ;
     }
 
     @DeleteMapping(value = "/{serviceId}/medias/{mediaId}")
@@ -169,5 +168,10 @@ public class WorkshopServiceController {
                             .body(buffer);
                 })
                 .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
+    }
+
+    @DeleteMapping("/{serviceId}/tasks/{taskId}")
+    public Mono<Long> deleteTask(@PathVariable("serviceId") Long serviceId, @PathVariable("taskId") Long taskId) {
+        return transactionService.deleteTask(serviceId, taskId);
     }
 }

@@ -7,6 +7,8 @@ import com.tsd.workshop.transaction.data.WorkshopServiceRepository;
 import com.tsd.workshop.transaction.media.WorkshopServiceMediaService;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsage;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
+import com.tsd.workshop.workmanship.data.WorkmanshipTask;
+import com.tsd.workshop.workmanship.data.WorkmanshipTaskRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.Sort;
@@ -44,15 +46,26 @@ public class TransactionServiceTest {
         spu2.setOrderId(2001L);
         ws.setSparePartUsages(List.of(spu1, spu2));
 
+        WorkmanshipTask task1 = new WorkmanshipTask();
+        task1.setId(60000L);
+        task1.setTaskId(66000L);
+        task1.setRemarks("hello world");
+        task1.setQuotedPrice(new BigDecimal("300.00"));
+        ws.setTasks(List.of(task1));
+
         WorkshopServiceRepository wsRepo = mock(WorkshopServiceRepository.class);
         when(wsRepo.save(ws)).thenReturn(Mono.just(ws));
 
         SparePartUsageRepository spuRepo = mock(SparePartUsageRepository.class);
         when(spuRepo.saveAll(ws.getSparePartUsages())).thenReturn(Flux.just(spu1, spu2));
 
+        WorkmanshipTaskRepository taskRepo = mock(WorkmanshipTaskRepository.class);
+        when(taskRepo.saveAll(ws.getTasks())).thenReturn(Flux.just(task1));
+
         TransactionService txService = new TransactionService();
         ReflectionTestUtils.setField(txService, "workshopServiceRepository", wsRepo);
         ReflectionTestUtils.setField(txService, "sparePartUsageRepository", spuRepo);
+        ReflectionTestUtils.setField(txService, "workmanshipTaskRepository", taskRepo);
 
         StepVerifier.create(txService.save(ws))
                 .expectNext(ws)
@@ -125,24 +138,44 @@ public class TransactionServiceTest {
         WorkshopServiceMediaService workshopServiceMediaService = mock(WorkshopServiceMediaService.class);
         when(workshopServiceMediaService.groupedServiceIdCounts()).thenReturn(Mono.just(Collections.emptyMap()));
 
+        WorkmanshipTaskRepository taskRepo = mock(WorkmanshipTaskRepository.class);
+        WorkmanshipTask task1 = new WorkmanshipTask();
+        task1.setId(60000L);
+        task1.setTaskId(66000L);
+        task1.setRemarks("hello world");
+        task1.setQuotedPrice(new BigDecimal("300.00"));
+
+        when(taskRepo.findByServiceId(1000L)).thenReturn(Flux.just(task1));
+
+        WorkmanshipTask task2 = new WorkmanshipTask();
+        task2.setId(60001L);
+        task2.setTaskId(66001L);
+        task2.setRemarks("hello world 2");
+        task2.setQuotedPrice(new BigDecimal("400.00"));
+
+        when(taskRepo.findByServiceId(1001L)).thenReturn(Flux.just(task2));
+
         TransactionService txService = new TransactionService();
         ReflectionTestUtils.setField(txService, "workshopServiceRepository", wsRepo);
         ReflectionTestUtils.setField(txService, "sparePartUsageRepository", spuRepo);
         ReflectionTestUtils.setField(txService, "migDataRepository", mdRepo);
         ReflectionTestUtils.setField(txService, "workshopServiceMediaService", workshopServiceMediaService);
+        ReflectionTestUtils.setField(txService, "workmanshipTaskRepository", taskRepo);
 
         StepVerifier.create(txService.findAll())
                 .expectNextMatches(wss ->
                     wss.getMigratedHandWrittenSpareParts().getFirst().getPartName().equals("OIL FILTER") &&
                             wss.getMigratedHandWrittenSpareParts().get(1).getPartName().equals("FUEL FILTER") &&
                             wss.getSparePartUsages().getFirst().getOrderId().equals(5000L) &&
-                            wss.getSparePartUsages().get(1).getOrderId().equals(5001L)
+                            wss.getSparePartUsages().get(1).getOrderId().equals(5001L) &&
+                            wss.getTasks().getFirst().getRemarks().equals("hello world")
                 )
                 .expectNextMatches(wss ->
                         wss.getMigratedHandWrittenSpareParts().getFirst().getPartName().equals("BRAKE LINING") &&
                                 wss.getMigratedHandWrittenSpareParts().get(1).getPartName().equals("6MM SCREW") &&
                                 wss.getSparePartUsages().getFirst().getOrderId().equals(5002L) &&
-                                wss.getSparePartUsages().get(1).getOrderId().equals(5003L)
+                                wss.getSparePartUsages().get(1).getOrderId().equals(5003L) &&
+                                wss.getTasks().getFirst().getRemarks().equals("hello world 2")
                 )
                 .verifyComplete();
     }

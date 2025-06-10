@@ -39,12 +39,15 @@ public class WorkshopServiceSqlRepository {
                         databaseClient.sql("""
                                         update deleted_workshop_service set deletion_date = :deletion_date,
                                         spare_part_usages =
-                                        (select json_agg(row_to_json(spu)) from spare_part_usages spu where service_id = :service_id)
+                                        (select json_agg(row_to_json(spu)) from spare_part_usages spu where service_id = :service_id),
+                                        workmanship_task =
+                                        (select json_agg(row_to_json(tasks)) from workmanship_task tasks where service_id = :service_id)
                                         where id = :id
                                         """)
                                 .bind(0, LocalDate.now())
                                 .bind(1, id)
                                 .bind(2, id)
+                                .bind(3, id)
                                 .flatMap(Result::getRowsUpdated)
                                 .singleOrEmpty()
                                 .switchIfEmpty(Mono.just(0L))

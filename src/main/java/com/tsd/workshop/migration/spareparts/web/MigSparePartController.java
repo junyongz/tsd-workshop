@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/spare-parts")
+@RequestMapping("/api/spare-parts")
 public class MigSparePartController {
     @Autowired
     private MigSparePartService migSparePartService;

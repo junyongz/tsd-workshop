@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/spare-part-utilizations")
+@RequestMapping("/api/spare-part-utilizations")
 public class SparePartUsageController {
     @Autowired
     private SparePartUsageService sparePartUsageService;

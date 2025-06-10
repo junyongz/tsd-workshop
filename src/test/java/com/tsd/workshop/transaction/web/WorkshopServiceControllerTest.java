@@ -41,7 +41,7 @@ public class WorkshopServiceControllerTest {
         WebTestClient webTestClient = WebTestClient
                 .bindToApplicationContext(ctx)
                 .build();
-        webTestClient.post().uri("/workshop-services?op=COMPLETE")
+        webTestClient.post().uri("/api/workshop-services?op=COMPLETE")
                 .body(BodyInserters.fromValue(ws))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -73,7 +73,7 @@ public class WorkshopServiceControllerTest {
         WebTestClient webTestClient = WebTestClient
                 .bindToApplicationContext(ctx)
                 .build();
-        webTestClient.post().uri("/workshop-services?op=COMPLETE")
+        webTestClient.post().uri("/api/workshop-services?op=COMPLETE")
                 .body(BodyInserters.fromValue(ws))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()

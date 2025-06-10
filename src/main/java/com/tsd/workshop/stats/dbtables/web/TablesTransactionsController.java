@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 @RestController
-@RequestMapping("/stats/dbtables")
+@RequestMapping("/api/stats/dbtables")
 public class TablesTransactionsController {
 
     @Autowired

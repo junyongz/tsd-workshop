@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/vehicles")
+@RequestMapping("/api/vehicles")
 public class VehicleController {
     @Autowired
     private VehicleService vehicleService;
