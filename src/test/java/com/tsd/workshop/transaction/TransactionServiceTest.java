@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,7 @@ public class TransactionServiceTest {
     void saveWithMoreThan1SparePartUsage() {
         WorkshopService ws = new WorkshopService();
         ws.setVehicleId(1000L);
+        ws.setVehicleNo("J 1");
         ws.setStartDate(LocalDate.of(2020, 12, 24));
         ws.setCreationDate(LocalDate.of(2021, 1, 1));
         ws.setCompletionDate(LocalDate.of(2021, 1, 3));
@@ -40,10 +42,12 @@ public class TransactionServiceTest {
         spu1.setId(50000L);
         spu1.setQuantity(BigDecimal.ONE);
         spu1.setOrderId(2000L);
+        spu1.setVehicleNo("JJJ 1");
         SparePartUsage spu2 = new SparePartUsage();
         spu2.setId(50001L);
         spu2.setQuantity(BigDecimal.TWO);
         spu2.setOrderId(2001L);
+        spu1.setVehicleNo("JJJ 2");
         ws.setSparePartUsages(List.of(spu1, spu2));
 
         WorkmanshipTask task1 = new WorkmanshipTask();
@@ -71,6 +75,9 @@ public class TransactionServiceTest {
                 .expectNext(ws)
                 .expectComplete()
                 .verify();
+
+        assertThat(ws.getSparePartUsages().getFirst().getVehicleNo()).isEqualTo("J 1");
+        assertThat(ws.getSparePartUsages().get(1).getVehicleNo()).isEqualTo("J 1");
     }
 
     @Test

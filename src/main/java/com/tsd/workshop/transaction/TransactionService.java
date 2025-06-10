@@ -115,6 +115,7 @@ public class TransactionService {
                 .flatMap(ws -> {
                     for (SparePartUsage spu : workshopService.getSparePartUsages()) {
                         spu.setServiceId(ws.getId());
+                        spu.setVehicleNo(workshopService.getVehicleNo());
                     }
                     for (WorkmanshipTask task : workshopService.getTasks()) {
                         task.setServiceId(ws.getId());
