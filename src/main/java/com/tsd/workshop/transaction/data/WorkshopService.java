@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.InsertOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,6 +40,8 @@ public class WorkshopService {
     private LocalDate creationDate = LocalDate.now();
 
     private String notes;
+
+    private BigDecimal sparePartsMargin;
 
     @Transient
     private List<WorkmanshipTask> tasks;
@@ -128,6 +131,14 @@ public class WorkshopService {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public BigDecimal getSparePartsMargin() {
+        return sparePartsMargin;
+    }
+
+    public void setSparePartsMargin(BigDecimal sparePartsMargin) {
+        this.sparePartsMargin = sparePartsMargin;
     }
 
     public List<WorkmanshipTask> getTasks() {

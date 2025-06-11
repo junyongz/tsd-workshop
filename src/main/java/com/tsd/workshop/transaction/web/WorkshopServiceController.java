@@ -107,9 +107,11 @@ public class WorkshopServiceController {
                 })
                 .then(transactionService.save(workshopService));
 
-        List<SparePartUsage> sparePartUsages = workshopService.getSparePartUsages();
-        if (sparePartUsages != null && !sparePartUsages.isEmpty()) {
-            return sparePartUsageService.validateSparePartUsageByQuantity(sparePartUsages)
+        List<SparePartUsage> validatingSparePartUsages = workshopService.getSparePartUsages().stream()
+                .filter(spu -> spu.getId() == null)
+                .toList();
+        if (!validatingSparePartUsages.isEmpty()) {
+            return sparePartUsageService.validateSparePartUsageByQuantity(validatingSparePartUsages)
                     .all(Boolean.TRUE::equals)
                     .flatMap(truly -> updateRoutine);
         }

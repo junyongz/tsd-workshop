@@ -17,10 +17,12 @@ public class MigTaskSqlRepository {
 
     public Flux<MigTask> searchByKeyword(String keyword) {
        return this.databaseClient.sql("""
-                select description, max(unit_price) as unit_price from raw_tasks_unit_price
-                where lower(description) like :keyword
-                and unit_price is not null
-                group by description
+                select description, max(unit_price) unit_price, count(*) cnt
+                  from raw_tasks_unit_price
+                 where lower(description) like :keyword
+                   and unit_price is not null
+                  group by description
+                  order by cnt desc, unit_price asc
                 """)
                .bind("keyword", "%%%s%%".formatted(keyword.toLowerCase()))
                .fetch()
@@ -35,16 +37,20 @@ public class MigTaskSqlRepository {
 
     public Flux<MigTask> searchByTasks(String workshopTasks, String subsystem) {
         return this.databaseClient.sql("""
-                select description, max(unit_price) as unit_price from raw_tasks_unit_price
+                select * from (
+                select description, max(unit_price) unit_price, count(*) cnt
+                  from raw_tasks_unit_price
                  where workshop_tasks @> :tasks::text[]
                    and subsystem = :subsystem
                    and unit_price is not null
                  group by description
                 union all
-                select description, max(unit_price) as unit_price from raw_tasks_unit_price
+                select description, max(unit_price) unit_price, count(*) cnt
+                  from raw_tasks_unit_price
                  where to_tsvector(description) @@ websearch_to_tsquery(:single_tasks)
                    and unit_price is not null
                  group by description
+                 ) t order by cnt desc, unit_price asc
                 """)
                 .bind("tasks", new String[] { workshopTasks })
                 .bind("single_tasks", workshopTasks)
@@ -61,9 +67,11 @@ public class MigTaskSqlRepository {
 
     public Flux<MigTask> findAll() {
         return this.databaseClient.sql("""
-                select description, max(unit_price) as unit_price from raw_tasks_unit_price
-                where unit_price is not null
-                group by description
+                select description, max(unit_price) as unit_price, count(*) cnt
+                  from raw_tasks_unit_price
+                 where unit_price is not null
+                 group by description
+                 order by cnt desc, unit_price asc
                 """)
                 .fetch()
                 .all()

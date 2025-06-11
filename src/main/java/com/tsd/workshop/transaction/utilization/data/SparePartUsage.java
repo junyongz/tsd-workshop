@@ -2,6 +2,7 @@ package com.tsd.workshop.transaction.utilization.data;
 
 import com.tsd.workshop.transaction.data.WorkshopService;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.InsertOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
@@ -16,7 +17,9 @@ public class SparePartUsage {
     private LocalDate usageDate;
     private Long orderId;
     private Long serviceId;
+    @InsertOnlyProperty
     private BigDecimal quantity;
+    private BigDecimal margin;
     private BigDecimal soldPrice;
 
     // Default constructor
@@ -79,6 +82,14 @@ public class SparePartUsage {
         this.quantity = quantity;
     }
 
+    public BigDecimal getMargin() {
+        return margin;
+    }
+
+    public void setMargin(BigDecimal margin) {
+        this.margin = margin;
+    }
+
     public BigDecimal getSoldPrice() {
         return soldPrice;
     }
@@ -106,6 +117,7 @@ public class SparePartUsage {
                 ", orderId=" + orderId +
                 ", serviceId=" + serviceId +
                 ", quantity=" + quantity +
+                ", margin=" + margin +
                 ", soldPrice=" + soldPrice +
                 '}';
     }

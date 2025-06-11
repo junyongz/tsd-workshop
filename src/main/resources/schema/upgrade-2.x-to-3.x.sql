@@ -19,9 +19,10 @@ create table workmanship_task (
 create sequence workmanship_task_seq owned by workmanship_task.id;
 ALTER TABLE workmanship_task ALTER COLUMN id SET DEFAULT nextval('workmanship_task_seq');
 
-alter table deleted_workshop_service add column workmanship_task json;
+alter table workshop_service add column spare_parts_margin numeric;
+
 create table temp_deleted_workshop_service as
-select id, vehicle_id, vehicle_no, start_date, completion_date, creation_date, mileage_km, transaction_types, null::text as notes, null::json as workmanship_task, spare_part_usages, deletion_date
+select id, vehicle_id, vehicle_no, start_date, completion_date, creation_date, mileage_km, transaction_types, notes, null::numeric spare_parts_margin, null::json as workmanship_task, null::json spare_part_usages, deletion_date
 from deleted_workshop_service;
 drop table deleted_workshop_service;
 create table deleted_workshop_service as (select * from temp_deleted_workshop_service);
@@ -36,3 +37,4 @@ CREATE TABLE raw_tasks_unit_price (
 );
 CREATE INDEX idx_gin_task_desc ON public.raw_tasks_unit_price USING gin (to_tsvector('english'::regconfig, description));
 
+alter table spare_part_usages add column margin numeric;
