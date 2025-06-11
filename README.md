@@ -2,8 +2,12 @@
 
 ## What does it do
 
-1. Fetching migrated data
-2. APIs work on migrated data model
+1. Workshop services
+2. Media upload
+3. Orders maintenance
+4. Spare parts and tasks addition for the service
+5. Google maps integration
+6. Telematics integration
 
 ## Requirements
 
@@ -24,8 +28,8 @@ To copy bundled SPA over here (after `npm run build`)
 ## Roadmap
 
 1. 1.0 to mimic migrated data from excel (for both services & spare parts orders), support mapping of between truck and spare parts from order
-2. **2.0** migrate to new data model, service to consists of spare part usage, data fields validation
-4. 3.0 workmanship tasks creation
+2. 2.0 migrate to new data model, service to consists of spare part usage, data fields validation
+4. **3.0** workmanship tasks creation
 5. 4.0 spare part management and proactive alert
 
 ## Support This Project
