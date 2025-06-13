@@ -1,4 +1,23 @@
--- public.company definition
+-- before_mig_supplier_spare_parts definition
+
+-- Drop table
+
+-- DROP TABLE before_mig_supplier_spare_parts;
+
+CREATE TABLE before_mig_supplier_spare_parts (
+	id int8 NULL,
+	invoice_date date NULL,
+	part_name text NULL,
+	supplier text NULL,
+	notes text NULL,
+	quantity numeric NULL,
+	unit text NULL,
+	unit_price numeric NULL,
+	round numeric NULL
+);
+
+
+-- company definition
 
 -- Drop table
 
@@ -6,11 +25,12 @@
 
 CREATE TABLE company (
 	id numeric NULL,
-	company_name varchar(100) NULL
+	company_name varchar(100) NULL,
+	internal bool NULL
 );
 
 
--- public.deleted_mig_data definition
+-- deleted_mig_data definition
 
 -- Drop table
 
@@ -36,7 +56,7 @@ CREATE TABLE deleted_mig_data (
 );
 
 
--- public.deleted_mig_supplier_spare_parts definition
+-- deleted_mig_supplier_spare_parts definition
 
 -- Drop table
 
@@ -60,7 +80,30 @@ CREATE TABLE deleted_mig_supplier_spare_parts (
 );
 
 
--- public.mig_data definition
+-- deleted_workshop_service definition
+
+-- Drop table
+
+-- DROP TABLE deleted_workshop_service;
+
+CREATE TABLE deleted_workshop_service (
+	id int8 NULL,
+	vehicle_id int8 NULL,
+	vehicle_no text NULL,
+	start_date date NULL,
+	completion_date date NULL,
+	creation_date date NULL,
+	mileage_km int4 NULL,
+	transaction_types _text NULL,
+	notes text NULL,
+	spare_parts_margin numeric NULL,
+	workmanship_task json NULL,
+	spare_part_usages json NULL,
+	deletion_date date NULL
+);
+
+
+-- mig_data definition
 
 -- Drop table
 
@@ -81,11 +124,13 @@ CREATE TABLE mig_data (
 	migrated_ind bool NULL,
 	completion_date date NULL,
 	supplier_id numeric NULL,
-	order_id numeric NULL
+	order_id numeric NULL,
+	service_id int8 NULL
 );
+CREATE INDEX idx_mig_service_id ON mig_data USING btree (service_id);
 
 
--- public.mig_spare_parts definition
+-- mig_spare_parts definition
 
 -- Drop table
 
@@ -103,14 +148,14 @@ CREATE TABLE mig_spare_parts (
 );
 
 
--- public.mig_supplier_spare_parts definition
+-- mig_supplier_spare_parts definition
 
 -- Drop table
 
 -- DROP TABLE mig_supplier_spare_parts;
 
 CREATE TABLE mig_supplier_spare_parts (
-	id int8 DEFAULT nextval('mig_supplier_spare_parts_seq'::regclass) NULL,
+	id int8 DEFAULT nextval('mig_supplier_spare_parts_seq'::regclass) NOT NULL,
 	delivery_order_no text NULL,
 	computed_date text NULL,
 	invoice_date date NULL,
@@ -122,11 +167,37 @@ CREATE TABLE mig_supplier_spare_parts (
 	unit_price numeric NULL,
 	notes text NULL,
 	supplier_id int8 NULL,
-	sheet_name text NULL
+	sheet_name text NULL,
+	CONSTRAINT mig_supplier_spare_parts_pkey PRIMARY KEY (id)
 );
 
 
--- public.raw_mig_data definition
+-- miss_hit_20250327_mig_data definition
+
+-- Drop table
+
+-- DROP TABLE miss_hit_20250327_mig_data;
+
+CREATE TABLE miss_hit_20250327_mig_data (
+	"index" int8 NULL,
+	sheet_name text NULL,
+	vehicle_no text NULL,
+	creation_date date NULL,
+	item_description text NULL,
+	part_name text NULL,
+	quantity numeric NULL,
+	unit text NULL,
+	unit_price numeric NULL,
+	total_price numeric NULL,
+	calculated_total_price numeric NULL,
+	migrated_ind bool NULL,
+	completion_date date NULL,
+	supplier_id numeric NULL,
+	order_id numeric NULL
+);
+
+
+-- raw_mig_data definition
 
 -- Drop table
 
@@ -140,10 +211,10 @@ CREATE TABLE raw_mig_data (
 	item_description text NULL,
 	total_price text NULL
 );
-CREATE INDEX ix_raw_mig_data_index ON public.raw_mig_data USING btree (index);
+CREATE INDEX ix_raw_mig_data_index ON raw_mig_data USING btree (index);
 
 
--- public.raw_mig_external_bills definition
+-- raw_mig_external_bills definition
 
 -- Drop table
 
@@ -160,10 +231,10 @@ CREATE TABLE raw_mig_external_bills (
 	customer text NULL,
 	invoicedate text NULL
 );
-CREATE INDEX ix_raw_mig_external_bills_index ON public.raw_mig_external_bills USING btree (index);
+CREATE INDEX ix_raw_mig_external_bills_index ON raw_mig_external_bills USING btree (index);
 
 
--- public.raw_mig_supplier_spare_parts definition
+-- raw_mig_supplier_spare_parts definition
 
 -- Drop table
 
@@ -182,10 +253,10 @@ CREATE TABLE raw_mig_supplier_spare_parts (
 	supplier_name text NULL,
 	sheet_name text NULL
 );
-CREATE INDEX ix_raw_mig_supplier_spare_parts_index ON public.raw_mig_supplier_spare_parts USING btree (index);
+CREATE INDEX ix_raw_mig_supplier_spare_parts_index ON raw_mig_supplier_spare_parts USING btree (index);
 
 
--- public.raw_mig_tasks definition
+-- raw_mig_tasks definition
 
 -- Drop table
 
@@ -203,27 +274,47 @@ CREATE TABLE raw_mig_tasks (
 	"AveragePrice" float8 NULL,
 	"Perc90Price" float8 NULL
 );
-CREATE INDEX ix_raw_mig_tasks_index ON public.raw_mig_tasks USING btree (index);
+CREATE INDEX ix_raw_mig_tasks_index ON raw_mig_tasks USING btree (index);
 
 
--- public.spare_part_usages definition
+-- raw_tasks_unit_price definition
+
+-- Drop table
+
+-- DROP TABLE raw_tasks_unit_price;
+
+CREATE TABLE raw_tasks_unit_price (
+	description text NULL,
+	unit_price numeric NULL,
+	workshop_tasks _text NULL,
+	subsystem text NULL,
+	status text NULL
+);
+CREATE INDEX idx_gin_task_desc ON raw_tasks_unit_price USING gin (to_tsvector('english'::regconfig, description));
+
+
+-- spare_part_usages definition
 
 -- Drop table
 
 -- DROP TABLE spare_part_usages;
 
 CREATE TABLE spare_part_usages (
-	id numeric DEFAULT nextval('spare_part_usage_seq'::regclass) NULL,
+	id int8 DEFAULT nextval('spare_part_usage_seq'::regclass) NULL,
 	vehicle_id numeric NULL,
 	vehicle_no varchar(12) NULL,
 	usage_date date NULL,
 	order_id numeric NULL,
 	service_id numeric NULL,
-	quantity numeric NULL
+	quantity numeric NULL,
+	mig_data_index int8 NULL,
+	sold_price numeric NULL,
+	margin numeric NULL
 );
+CREATE INDEX idx_service_id ON spare_part_usages USING btree (service_id);
 
 
--- public.supplier definition
+-- supplier definition
 
 -- Drop table
 
@@ -235,7 +326,23 @@ CREATE TABLE supplier (
 );
 
 
--- public.vehicle definition
+-- task_component definition
+
+-- Drop table
+
+-- DROP TABLE task_component;
+
+CREATE TABLE task_component (
+	id int8 NOT NULL,
+	component_name varchar(100) NOT NULL,
+	subsystem varchar(50) NOT NULL,
+	description varchar(200) NOT NULL,
+	CONSTRAINT task_component_component_name_key UNIQUE (component_name),
+	CONSTRAINT task_component_pkey PRIMARY KEY (id)
+);
+
+
+-- vehicle definition
 
 -- Drop table
 
@@ -247,5 +354,109 @@ CREATE TABLE vehicle (
 	trailer_no varchar(12) NULL,
 	company_id numeric NULL,
 	brand varchar(50) NULL,
-	model varchar(100) NULL
+	model varchar(100) NULL,
+	insurance_expiry_date date NULL,
+	road_tax_expiry_date date NULL,
+	latest_mileage_km int8 NULL,
+	inspection_due_date date NULL,
+	status text NULL,
+	trailer_inspection_due_date date NULL,
+	next_inspection_date date NULL,
+	next_trailer_inspection_date date NULL
+);
+
+
+-- vehicle_fleet_info definition
+
+-- Drop table
+
+-- DROP TABLE vehicle_fleet_info;
+
+CREATE TABLE vehicle_fleet_info (
+	id int8 DEFAULT nextval('vehicle_fleet_info_seq'::regclass) NOT NULL,
+	vehicle_id int8 NULL,
+	vehicle_no varchar(12) NULL,
+	creation_date timestamp NULL,
+	"data" jsonb NULL,
+	CONSTRAINT vehicle_fleet_info_pkey PRIMARY KEY (id)
+);
+CREATE INDEX idx_fleet_vehicle_no ON vehicle_fleet_info USING btree (vehicle_no);
+
+
+-- workmanship_task definition
+
+-- Drop table
+
+-- DROP TABLE workmanship_task;
+
+CREATE TABLE workmanship_task (
+	id int8 DEFAULT nextval('workmanship_task_seq'::regclass) NOT NULL,
+	recorded_date date NULL,
+	service_id int8 NULL,
+	task_id int8 NULL,
+	foremen _text NULL,
+	remarks text NULL,
+	quoted_price numeric NULL,
+	actual_duration_hours numeric NULL,
+	CONSTRAINT workmanship_task_pkey PRIMARY KEY (id)
+);
+
+
+-- workshop_service definition
+
+-- Drop table
+
+-- DROP TABLE workshop_service;
+
+CREATE TABLE workshop_service (
+	id int8 DEFAULT nextval('workshop_service_seq'::regclass) NOT NULL,
+	vehicle_id int8 NULL,
+	vehicle_no text NULL,
+	start_date date NULL,
+	completion_date date NULL,
+	creation_date date NULL,
+	mileage_km int4 NULL,
+	transaction_types _text NULL,
+	notes text NULL,
+	spare_parts_margin numeric NULL,
+	CONSTRAINT workshop_service_pkey PRIMARY KEY (id)
+);
+
+
+-- workshop_service_media definition
+
+-- Drop table
+
+-- DROP TABLE workshop_service_media;
+
+CREATE TABLE workshop_service_media (
+	id int8 DEFAULT nextval('workshop_service_media_seq'::regclass) NULL,
+	service_id int8 NULL,
+	file_name varchar NULL,
+	file_size numeric NULL,
+	added_timestamp timestamp NULL,
+	media bytea NULL,
+	media_type varchar NULL
+);
+CREATE INDEX idx_media_service_id ON workshop_service_media USING btree (service_id);
+
+
+-- workshop_task definition
+
+-- Drop table
+
+-- DROP TABLE workshop_task;
+
+CREATE TABLE workshop_task (
+	id int8 DEFAULT nextval('workshop_task_seq'::regclass) NOT NULL,
+	component_id int4 NOT NULL,
+	workmanship_task varchar(100) NOT NULL,
+	unit_price numeric(10, 2) NOT NULL,
+	complexity varchar(20) NOT NULL,
+	labour_hours numeric(5, 2) NOT NULL,
+	category varchar(20) NOT NULL,
+	description text NOT NULL,
+	CONSTRAINT workshop_task_component_id_workmanship_task_key UNIQUE (component_id, workmanship_task),
+	CONSTRAINT workshop_task_pkey PRIMARY KEY (id),
+	CONSTRAINT workshop_task_component_id_fkey FOREIGN KEY (component_id) REFERENCES task_component(id)
 );
