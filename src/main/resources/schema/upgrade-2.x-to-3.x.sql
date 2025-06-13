@@ -1,3 +1,19 @@
+CREATE TABLE workshop_task (
+    id int8 PRIMARY KEY,
+    component_id INT NOT NULL,
+    workmanship_task VARCHAR(100) NOT NULL,
+    unit_price NUMERIC(10,2) NOT NULL,
+    complexity VARCHAR(20) NOT NULL,
+    labour_hours NUMERIC(5,2) NOT NULL,
+    category VARCHAR(20) NOT NULL,
+    description TEXT NOT NULL,
+    FOREIGN KEY (component_id) REFERENCES task_component(id),
+    UNIQUE (component_id, workmanship_task)
+);
+
+create sequence workshop_task_seq owned by workshop_task.id;
+ALTER TABLE workshop_task ALTER COLUMN id SET DEFAULT nextval('workshop_task_seq');
+
 CREATE TABLE task_component (
     id int8 PRIMARY KEY,
     component_name VARCHAR(100) NOT NULL,
