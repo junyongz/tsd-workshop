@@ -5,7 +5,7 @@ import com.tsd.workshop.vehicle.fleet.FleetInfo;
 import com.tsd.workshop.vehicle.fleet.FuelEfficiency;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
-@Component
+@Repository
 public class VehicleSqlRepository {
 
     private final DatabaseClient databaseClient;

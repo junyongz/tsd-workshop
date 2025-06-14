@@ -2,8 +2,12 @@ package com.tsd.workshop.supplier.data;
 
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
+@Repository
+@Transactional(readOnly = true)
 public interface SupplierRepository extends R2dbcRepository<Supplier, Long> {
 
     @Query("""

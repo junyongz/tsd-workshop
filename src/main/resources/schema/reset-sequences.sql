@@ -1,3 +1,4 @@
+-- to run after copy data into tables
 -- select 'select setval(''' || sequencename || ''', (select max(id) from ' || LEFT(sequencename, LENGTH(sequencename) - 4) || ')) + 1;' from pg_sequences where sequenceowner  = 'tsd';
 
 select setval('mig_data_seq', (select max(index) from mig_data)) + 1;

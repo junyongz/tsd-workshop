@@ -2,14 +2,14 @@ package com.tsd.workshop.transaction.media;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
 @Transactional(readOnly = true)
-@Component
+@Repository
 public class WorkshopServiceMediaSqlRepository {
 
     @Autowired

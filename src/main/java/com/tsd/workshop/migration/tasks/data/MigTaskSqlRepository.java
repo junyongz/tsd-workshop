@@ -2,14 +2,14 @@ package com.tsd.workshop.migration.tasks.data;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
 import java.math.BigDecimal;
 
 @Transactional(readOnly = true)
-@Component
+@Repository
 public class MigTaskSqlRepository {
 
     @Autowired

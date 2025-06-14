@@ -41,6 +41,11 @@ public class TransactionService {
     @Autowired
     private WorkshopServiceMediaService workshopServiceMediaService;
 
+    private final Sort defaultSort = Sort.by(
+            Sort.Order.desc("completionDate").nullsFirst(),
+            Sort.Order.desc("creationDate"),
+            Sort.Order.desc("startDate"));
+
     public Mono<WorkshopService> findById(Long id) {
         return this.workshopServiceRepository.findById(id)
                 .flatMap(ws ->
@@ -72,9 +77,7 @@ public class TransactionService {
     public Flux<WorkshopService> findAll() {
         return this.workshopServiceMediaService.groupedServiceIdCounts()
                 .flatMapMany(countByServiceId ->
-                    this.workshopServiceRepository.findAll(Sort.by(
-                                    Sort.Order.desc("completionDate").nullsFirst(),
-                                    Sort.Order.desc("startDate")))
+                    this.workshopServiceRepository.findAll(defaultSort)
                             .flatMapSequential(ws -> {
                                 if (ws.getCompletionDate() == null) {
                                     return Flux.zip(
@@ -100,9 +103,7 @@ public class TransactionService {
 
     public Flux<WorkshopService> findWithPages(int pageNum, int pageSize) {
         return populateAssociations(this.workshopServiceRepository.findAllBy(PageRequest.of(pageNum, pageSize)
-                        .withSort(Sort.by(
-                                Sort.Order.desc("completionDate").nullsFirst(),
-                                Sort.Order.desc("startDate")))));
+                        .withSort(defaultSort)));
     }
 
     public Flux<WorkshopService> findByYearAndMonth(int year, int month) {

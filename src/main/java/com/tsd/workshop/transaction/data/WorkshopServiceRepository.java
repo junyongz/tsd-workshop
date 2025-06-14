@@ -4,8 +4,12 @@ import com.tsd.workshop.transaction.TransactionType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 
+@Repository
+@Transactional
 public interface WorkshopServiceRepository extends R2dbcRepository<WorkshopService, Long> {
 
     Flux<WorkshopService> findByVehicleIdAndCompletionDateIsNull(Long vehicleId);
