@@ -54,3 +54,13 @@ CREATE TABLE raw_tasks_unit_price (
 CREATE INDEX idx_gin_task_desc ON public.raw_tasks_unit_price USING gin (to_tsvector('english'::regconfig, description));
 
 alter table spare_part_usages add column margin numeric;
+
+create table scheduling_service (
+	id int8 primary key,
+	scheduled_date date,
+	vehicle_id int8,
+	vehicle_no varchar(12),
+	notes text
+);
+create sequence scheduling_service_seq owned by scheduling_service.id;
+ALTER TABLE scheduling_service ALTER COLUMN id SET DEFAULT nextval('scheduling_service_seq');

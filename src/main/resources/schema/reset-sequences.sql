@@ -10,3 +10,4 @@ select setval('workmanship_task_seq', (select max(id) from workmanship_task)) + 
 select setval('workshop_service_media_seq', (select max(id) from workshop_service_media)) + 1;
 select setval('workshop_service_seq', (select max(id) from workshop_service)) + 1;
 select setval('workshop_task_seq', (select max(id) from workshop_task)) + 1;
+select setval('scheduling_service_seq', (select max(id) from scheduling_service)) + 1;

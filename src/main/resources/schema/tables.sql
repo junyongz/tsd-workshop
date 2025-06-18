@@ -460,3 +460,11 @@ CREATE TABLE workshop_task (
 	CONSTRAINT workshop_task_pkey PRIMARY KEY (id),
 	CONSTRAINT workshop_task_component_id_fkey FOREIGN KEY (component_id) REFERENCES task_component(id)
 );
+
+create table scheduling_service (
+	id int8 primary key DEFAULT nextval('scheduling_service_seq'::regclass) NOT NULL,,
+	scheduled_date date,
+	vehicle_id int8,
+	vehicle_no varchar(12),
+	notes text
+);
