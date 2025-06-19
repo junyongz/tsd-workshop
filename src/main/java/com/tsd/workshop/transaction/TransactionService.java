@@ -51,7 +51,7 @@ public class TransactionService {
                 .flatMap(ws ->
                 Mono.zip(
                     migDataRepository.findByServiceId(ws.getId()).collectList(),
-                    sparePartUsageRepository.findByServiceId(ws.getId()).collectList(),
+                    sparePartUsageRepository.findByServiceIdOrderByUsageDateDesc(ws.getId()).collectList(),
                     workshopServiceMediaService.countByServiceId(ws.getId()),
                     workmanshipTaskRepository.findByServiceId(ws.getId()).collectList()
                 ).map(t -> {
@@ -82,7 +82,7 @@ public class TransactionService {
                                 if (ws.getCompletionDate() == null) {
                                     return Flux.zip(
                                         migDataRepository.findByServiceId(ws.getId()).collectList(),
-                                        sparePartUsageRepository.findByServiceId(ws.getId()).collectList(),
+                                        sparePartUsageRepository.findByServiceIdOrderByUsageDateDesc(ws.getId()).collectList(),
                                         workmanshipTaskRepository.findByServiceId(ws.getId()).collectList()
                                     ).map(t -> {
                                         ws.setMigratedHandWrittenSpareParts(t.getT1());
@@ -179,7 +179,7 @@ public class TransactionService {
         return wss.flatMapSequential(ws ->
                 Flux.zip(
                     migDataRepository.findByServiceId(ws.getId()).collectList(),
-                    sparePartUsageRepository.findByServiceId(ws.getId()).collectList(),
+                    sparePartUsageRepository.findByServiceIdOrderByUsageDateDesc(ws.getId()).collectList(),
                     workmanshipTaskRepository.findByServiceId(ws.getId()).collectList(),
                     workshopServiceMediaService.countByServiceId(ws.getId())
                 ).map(t -> {

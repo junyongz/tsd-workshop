@@ -14,5 +14,5 @@ public interface SparePartUsageRepository extends R2dbcRepository<SparePartUsage
 
     Mono<Void> deleteByOrderId(Long orderId);
 
-    Flux<SparePartUsage> findByServiceId(Long serviceId);
+    Flux<SparePartUsage> findByServiceIdOrderByUsageDateDesc(Long serviceId);
 }

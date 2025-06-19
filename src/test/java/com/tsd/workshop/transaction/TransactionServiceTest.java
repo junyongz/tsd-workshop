@@ -130,7 +130,7 @@ public class TransactionServiceTest {
         spu2.setQuantity(BigDecimal.valueOf(5));
 
         SparePartUsageRepository spuRepo = mock(SparePartUsageRepository.class);
-        when(spuRepo.findByServiceId(1000L)).thenReturn(Flux.just(spu1, spu2));
+        when(spuRepo.findByServiceIdOrderByUsageDateDesc(1000L)).thenReturn(Flux.just(spu1, spu2));
 
         SparePartUsage spu3 = new SparePartUsage();
         spu3.setOrderId(5002L);
@@ -140,7 +140,7 @@ public class TransactionServiceTest {
         spu4.setOrderId(5003L);
         spu4.setQuantity(BigDecimal.valueOf(5));
 
-        when(spuRepo.findByServiceId(1001L)).thenReturn(Flux.just(spu3, spu4));
+        when(spuRepo.findByServiceIdOrderByUsageDateDesc(1001L)).thenReturn(Flux.just(spu3, spu4));
 
         WorkshopServiceMediaService workshopServiceMediaService = mock(WorkshopServiceMediaService.class);
         when(workshopServiceMediaService.groupedServiceIdCounts()).thenReturn(Mono.just(Collections.emptyMap()));
