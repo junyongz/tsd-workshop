@@ -64,3 +64,13 @@ create table scheduling_service (
 );
 create sequence scheduling_service_seq owned by scheduling_service.id;
 ALTER TABLE scheduling_service ALTER COLUMN id SET DEFAULT nextval('scheduling_service_seq');
+
+alter table mig_supplier_spare_parts add column status varchar(10);
+update mig_supplier_spare_parts set status = 'ACTIVE';
+
+create table temp_deleted_mig_supplier_spare_parts as
+select id, delivery_order_no, computed_date, invoice_date, item_code, part_name, particular, quantity, unit, unit_price, notes, supplier_id, sheet_name, 'ACTIVE'::varchar(10) as status, deletion_date
+from deleted_mig_supplier_spare_parts;
+drop table deleted_mig_supplier_spare_parts;
+create table deleted_mig_supplier_spare_parts as (select * from temp_deleted_mig_supplier_spare_parts);
+drop table temp_deleted_mig_supplier_spare_parts;

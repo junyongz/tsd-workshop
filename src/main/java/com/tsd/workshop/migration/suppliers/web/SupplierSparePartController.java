@@ -33,6 +33,11 @@ public class SupplierSparePartController {
             return supplierSparePartService.updateNotes(supplierSpareParts.getFirst()).flux();
         }
 
+        if (operation == Operation.DEPLETE) {
+            // only will deal with the first supplier spare parts
+            return supplierSparePartService.deplete(supplierSpareParts.getFirst()).flux();
+        }
+
         List<SupplierSparePart> editingSsp = supplierSpareParts.stream().filter(ssp -> ssp.getId() != null)
                 .toList();
 

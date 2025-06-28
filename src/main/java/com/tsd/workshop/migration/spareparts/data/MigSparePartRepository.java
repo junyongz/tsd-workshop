@@ -14,7 +14,8 @@ public interface MigSparePartRepository extends R2dbcRepository<MigSparePart, Lo
     @Query("""
             select sp.id, sp.item_code, sp.part_name, sp.unit, sp.unit_price,
                         -- mssp.id, mssp.quantity, usages.total_quantity,
-                        	add_allowed AND mssp.quantity <> coalesce(usages.total_quantity, 0) as add_allowed,
+                        	add_allowed AND
+                        	(mssp.quantity <> coalesce(usages.total_quantity, 0) and mssp.status = 'ACTIVE') as add_allowed,
                         	sp.supplier_id, sp.order_id
                         from mig_spare_parts sp
                         left outer join

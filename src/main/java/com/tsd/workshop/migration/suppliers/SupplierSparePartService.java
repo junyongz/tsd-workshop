@@ -1,6 +1,7 @@
 package com.tsd.workshop.migration.suppliers;
 
 import com.tsd.workshop.migration.spareparts.MigSparePartService;
+import com.tsd.workshop.migration.suppliers.data.Status;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartRepository;
@@ -44,6 +45,17 @@ public class SupplierSparePartService {
                     if (count == 0) {
                         throw new SupplierSparePartNotFoundException(spp);
                     }
+                    return Mono.just(spp);
+                });
+    }
+
+    public Mono<SupplierSparePart> deplete(SupplierSparePart spp) {
+        return supplierSparePartR2dbcRepository.deplete(spp.getId())
+                .flatMap(count -> {
+                    if (count == 0) {
+                        throw new SupplierSparePartNotFoundException(spp);
+                    }
+                    spp.setStatus(Status.DEPLETED);
                     return Mono.just(spp);
                 });
     }

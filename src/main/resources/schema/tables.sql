@@ -76,6 +76,7 @@ CREATE TABLE deleted_mig_supplier_spare_parts (
 	notes text NULL,
 	supplier_id int8 NULL,
 	sheet_name text NULL,
+	status varchar(10),
 	deletion_date date NULL
 );
 
@@ -168,6 +169,7 @@ CREATE TABLE mig_supplier_spare_parts (
 	notes text NULL,
 	supplier_id int8 NULL,
 	sheet_name text NULL,
+	status varchar(10),
 	CONSTRAINT mig_supplier_spare_parts_pkey PRIMARY KEY (id)
 );
 
@@ -462,7 +464,7 @@ CREATE TABLE workshop_task (
 );
 
 create table scheduling_service (
-	id int8 primary key DEFAULT nextval('scheduling_service_seq'::regclass) NOT NULL,,
+	id int8 primary key DEFAULT nextval('scheduling_service_seq'::regclass) NOT NULL,
 	scheduled_date date,
 	vehicle_id int8,
 	vehicle_no varchar(12),

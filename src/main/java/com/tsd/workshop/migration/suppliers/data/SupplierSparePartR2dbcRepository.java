@@ -33,6 +33,13 @@ public class SupplierSparePartR2dbcRepository {
                 .first();
     }
 
+    public Mono<Long> deplete(Long orderId) {
+        return databaseClient.sql("update mig_supplier_spare_parts set status = 'DEPLETED' where id = :order_id")
+                .bind(0, orderId)
+                .flatMap(Result::getRowsUpdated)
+                .singleOrEmpty();
+    }
+
     @Transactional
     public Mono<Long> moveToDeletedTable(Long orderId) {
         // TODO duplicate code with deletion of mig_data

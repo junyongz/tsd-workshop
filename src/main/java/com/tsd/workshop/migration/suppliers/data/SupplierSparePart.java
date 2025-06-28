@@ -24,6 +24,7 @@ public class SupplierSparePart {
     private String notes;
     private Long supplierId;
     private String sheetName;
+    private Status status = Status.ACTIVE;
 
     // Default constructor
     public SupplierSparePart() {}
@@ -133,6 +134,14 @@ public class SupplierSparePart {
         this.sheetName = sheetName;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public MigSparePart toSparePart() {
         MigSparePart sp = new MigSparePart();
         sp.setSupplierId(this.supplierId);
@@ -181,6 +190,7 @@ public class SupplierSparePart {
                 ", notes='" + notes + '\'' +
                 ", supplierId=" + supplierId +
                 ", sheetName='" + sheetName + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }
