@@ -1,6 +1,6 @@
 package com.tsd.workshop.vehicle.data;
 
-import com.tsd.workshop.maps.render.Coordination;
+import com.tsd.workshop.telematics.maps.render.Coordination;
 import com.tsd.workshop.vehicle.fleet.FleetInfo;
 import com.tsd.workshop.vehicle.fleet.FuelEfficiency;
 import org.springframework.beans.factory.annotation.Value;

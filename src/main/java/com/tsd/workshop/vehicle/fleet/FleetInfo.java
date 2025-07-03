@@ -1,6 +1,6 @@
 package com.tsd.workshop.vehicle.fleet;
 
-import com.tsd.workshop.maps.render.Coordination;
+import com.tsd.workshop.telematics.maps.render.Coordination;
 
 import java.time.LocalDateTime;
 

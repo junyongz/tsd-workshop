@@ -1,6 +1,6 @@
 package com.tsd.workshop.vehicle.web;
 
-import com.tsd.workshop.maps.render.*;
+import com.tsd.workshop.telematics.maps.render.*;
 import com.tsd.workshop.vehicle.VehicleNoWrongFormatException;
 import com.tsd.workshop.vehicle.VehicleService;
 import com.tsd.workshop.vehicle.VehicleStatus;
