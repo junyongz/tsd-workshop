@@ -1,6 +1,5 @@
 package com.tsd.workshop.migration.suppliers;
 
-import com.tsd.workshop.migration.spareparts.MigSparePartService;
 import com.tsd.workshop.migration.suppliers.data.Status;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
@@ -25,18 +24,10 @@ public class SupplierSparePartService {
     private SupplierSparePartR2dbcRepository supplierSparePartR2dbcRepository;
 
     @Autowired
-    private MigSparePartService migSparePartService;
-
-    @Autowired
     private SparePartUsageRepository sparePartUsageRepository;
 
     public Flux<SupplierSparePart> saveSupplierSpareParts(List<SupplierSparePart> supplierSpareParts) {
-        return supplierSparePartRepository
-                    .saveAll(supplierSpareParts)
-                    .collectList()
-                    .flatMapMany(sss ->
-                        migSparePartService.smartSaveMigSpareParts(sss).thenMany(Flux.fromIterable(sss))
-                    );
+        return supplierSparePartRepository.saveAll(supplierSpareParts);
     }
 
     public Mono<SupplierSparePart> updateNotes(SupplierSparePart spp) {
@@ -77,7 +68,6 @@ public class SupplierSparePartService {
     @Transactional
     public Mono<Void> deleteById(Long id) {
         return supplierSparePartR2dbcRepository.moveToDeletedTable(id)
-                .flatMap(count -> migSparePartService.deleteByOrderId(id))
-                .then(sparePartUsageRepository.deleteByOrderId(id));
+                .flatMap(count -> sparePartUsageRepository.deleteByOrderId(id));
     }
 }

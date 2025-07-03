@@ -1,6 +1,5 @@
 package com.tsd.workshop.migration.suppliers;
 
-import com.tsd.workshop.migration.spareparts.MigSparePartService;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
 import org.junit.jupiter.api.Test;
@@ -24,15 +23,9 @@ public class SupplierSparePartServiceTest {
         when(sparePartUsageRepository.deleteByOrderId(1000L)).thenReturn(Mono.empty());
         ReflectionTestUtils.setField(supplierSparePartService, "sparePartUsageRepository", sparePartUsageRepository);
 
-        MigSparePartService migSparePartService = mock(MigSparePartService.class);
-        when(migSparePartService.deleteByOrderId(1000L)).thenReturn(Mono.empty());
-        ReflectionTestUtils.setField(supplierSparePartService, "migSparePartService", migSparePartService);
-
         Mono<Void> voidz = supplierSparePartService.deleteById(1000L);
 
         StepVerifier.create(voidz).expectComplete().verify();
 
-        verify(sparePartUsageRepository).deleteByOrderId(1000L);
-        verify(migSparePartService).deleteByOrderId(1000L);
-    }
+        verify(sparePartUsageRepository).deleteByOrderId(1000L);}
 }

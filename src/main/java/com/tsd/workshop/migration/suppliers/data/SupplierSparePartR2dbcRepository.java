@@ -6,10 +6,12 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Transactional(readOnly = true)
 @Repository
@@ -38,6 +40,26 @@ public class SupplierSparePartR2dbcRepository {
                 .bind(0, orderId)
                 .flatMap(Result::getRowsUpdated)
                 .singleOrEmpty();
+    }
+
+    @Transactional
+    public Mono<Long> updateWithSparePartId(Long sparePartId, List<Long> orderIds) {
+        return databaseClient.sql("update mig_supplier_spare_parts set spare_part_id = null where spare_part_id = :spare_part_id")
+                        .bind("spare_part_id", sparePartId)
+                        .flatMap(Result::getRowsUpdated)
+                        .then(databaseClient.sql("update mig_supplier_spare_parts set spare_part_id = :spare_part_id where id in (:order_ids)")
+                                .bind("spare_part_id", sparePartId)
+                                .bind("order_ids", orderIds)
+                                .flatMap(Result::getRowsUpdated)
+                                .singleOrEmpty());
+    }
+
+    @Transactional
+    public Mono<Long> updateSparePartIdToNull(Long sparePartId) {
+        return databaseClient.sql("update mig_supplier_spare_parts set spare_part_id = null where spare_part_id = :spare_part_id")
+                        .bind("spare_part_id", sparePartId)
+                        .flatMap(Result::getRowsUpdated)
+                        .singleOrEmpty();
     }
 
     @Transactional

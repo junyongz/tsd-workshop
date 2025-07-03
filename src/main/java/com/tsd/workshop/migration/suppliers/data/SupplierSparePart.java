@@ -23,6 +23,7 @@ public class SupplierSparePart {
     private BigDecimal unitPrice;
     private String notes;
     private Long supplierId;
+    private Long sparePartId;
     private String sheetName;
     private Status status = Status.ACTIVE;
 
@@ -124,6 +125,14 @@ public class SupplierSparePart {
 
     public void setSupplierId(Long supplierId) {
         this.supplierId = supplierId;
+    }
+
+    public Long getSparePartId() {
+        return sparePartId;
+    }
+
+    public void setSparePartId(Long sparePartId) {
+        this.sparePartId = sparePartId;
     }
 
     public String getSheetName() {

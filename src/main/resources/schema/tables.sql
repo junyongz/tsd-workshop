@@ -1,22 +1,3 @@
--- before_mig_supplier_spare_parts definition
-
--- Drop table
-
--- DROP TABLE before_mig_supplier_spare_parts;
-
-CREATE TABLE before_mig_supplier_spare_parts (
-	id int8 NULL,
-	invoice_date date NULL,
-	part_name text NULL,
-	supplier text NULL,
-	notes text NULL,
-	quantity numeric NULL,
-	unit text NULL,
-	unit_price numeric NULL,
-	round numeric NULL
-);
-
-
 -- company definition
 
 -- Drop table
@@ -76,7 +57,8 @@ CREATE TABLE deleted_mig_supplier_spare_parts (
 	notes text NULL,
 	supplier_id int8 NULL,
 	sheet_name text NULL,
-	status varchar(10),
+	status varchar(10) NULL,
+	spare_part_id int8 NULL,
 	deletion_date date NULL
 );
 
@@ -138,14 +120,15 @@ CREATE INDEX idx_mig_service_id ON mig_data USING btree (service_id);
 -- DROP TABLE mig_spare_parts;
 
 CREATE TABLE mig_spare_parts (
-	id int8 DEFAULT nextval('spare_part_seq'::regclass) NULL,
+	id int8 DEFAULT nextval('mig_spare_part_seq'::regclass) NULL,
 	item_code text NULL,
 	part_name text NULL,
 	unit text NULL,
 	unit_price numeric NULL,
 	add_allowed bool NULL,
 	supplier_id numeric NULL,
-	order_id numeric NULL
+	order_id numeric NULL,
+	CONSTRAINT mig_spare_parts_pkey PRIMARY KEY (id)
 );
 
 
@@ -156,7 +139,7 @@ CREATE TABLE mig_spare_parts (
 -- DROP TABLE mig_supplier_spare_parts;
 
 CREATE TABLE mig_supplier_spare_parts (
-	id int8 DEFAULT nextval('mig_supplier_spare_parts_seq'::regclass) NOT NULL,
+	id int8 DEFAULT nextval('mig_supplier_spare_parts_seq'::regclass) NULL,
 	delivery_order_no text NULL,
 	computed_date text NULL,
 	invoice_date date NULL,
@@ -169,33 +152,8 @@ CREATE TABLE mig_supplier_spare_parts (
 	notes text NULL,
 	supplier_id int8 NULL,
 	sheet_name text NULL,
-	status varchar(10),
-	CONSTRAINT mig_supplier_spare_parts_pkey PRIMARY KEY (id)
-);
-
-
--- miss_hit_20250327_mig_data definition
-
--- Drop table
-
--- DROP TABLE miss_hit_20250327_mig_data;
-
-CREATE TABLE miss_hit_20250327_mig_data (
-	"index" int8 NULL,
-	sheet_name text NULL,
-	vehicle_no text NULL,
-	creation_date date NULL,
-	item_description text NULL,
-	part_name text NULL,
-	quantity numeric NULL,
-	unit text NULL,
-	unit_price numeric NULL,
-	total_price numeric NULL,
-	calculated_total_price numeric NULL,
-	migrated_ind bool NULL,
-	completion_date date NULL,
-	supplier_id numeric NULL,
-	order_id numeric NULL
+	status varchar(10) NULL,
+	spare_part_id int8 NULL
 );
 
 
@@ -295,6 +253,59 @@ CREATE TABLE raw_tasks_unit_price (
 CREATE INDEX idx_gin_task_desc ON raw_tasks_unit_price USING gin (to_tsvector('english'::regconfig, description));
 
 
+-- scheduling_service definition
+
+-- Drop table
+
+-- DROP TABLE scheduling_service;
+
+CREATE TABLE scheduling_service (
+	id int8 DEFAULT nextval('scheduling_service_seq'::regclass) NOT NULL,
+	scheduled_date date NULL,
+	vehicle_id int8 NULL,
+	vehicle_no varchar(12) NULL,
+	notes text NULL,
+	CONSTRAINT scheduling_service_pkey PRIMARY KEY (id)
+);
+
+
+-- spare_part definition
+
+-- Drop table
+
+-- DROP TABLE spare_part;
+
+CREATE TABLE spare_part (
+	id int8 DEFAULT nextval('spare_part_seq'::regclass) NOT NULL,
+	creation_date date NULL,
+	part_no varchar NULL,
+	part_name varchar NULL,
+	description varchar NULL,
+	oems json NULL,
+	compatible_trucks json NULL,
+	supplier_ids json NULL,
+	CONSTRAINT spare_part_pkey PRIMARY KEY (id)
+);
+
+
+-- spare_part_media definition
+
+-- Drop table
+
+-- DROP TABLE spare_part_media;
+
+CREATE TABLE spare_part_media (
+	id int8 DEFAULT nextval('spare_part_media_seq'::regclass) NOT NULL,
+	spare_part_id int8 NULL,
+	file_name varchar NULL,
+	file_size numeric NULL,
+	added_timestamp timestamp NULL,
+	media bytea NULL,
+	media_type varchar NULL,
+	CONSTRAINT spare_part_media_pkey PRIMARY KEY (id)
+);
+
+
 -- spare_part_usages definition
 
 -- Drop table
@@ -382,7 +393,6 @@ CREATE TABLE vehicle_fleet_info (
 	"data" jsonb NULL,
 	CONSTRAINT vehicle_fleet_info_pkey PRIMARY KEY (id)
 );
-CREATE INDEX idx_fleet_vehicle_no ON vehicle_fleet_info USING btree (vehicle_no);
 
 
 -- workmanship_task definition
@@ -459,14 +469,5 @@ CREATE TABLE workshop_task (
 	category varchar(20) NOT NULL,
 	description text NOT NULL,
 	CONSTRAINT workshop_task_component_id_workmanship_task_key UNIQUE (component_id, workmanship_task),
-	CONSTRAINT workshop_task_pkey PRIMARY KEY (id),
-	CONSTRAINT workshop_task_component_id_fkey FOREIGN KEY (component_id) REFERENCES task_component(id)
-);
-
-create table scheduling_service (
-	id int8 primary key DEFAULT nextval('scheduling_service_seq'::regclass) NOT NULL,
-	scheduled_date date,
-	vehicle_id int8,
-	vehicle_no varchar(12),
-	notes text
+	CONSTRAINT workshop_task_pkey PRIMARY KEY (id)
 );

@@ -109,6 +109,7 @@ public class WorkshopServiceSqlRepository {
                 .switchIfEmpty(Mono.just(0L))
                 .flatMapMany(cnt -> {
                     if (cnt > 0) {
+                        // there is vehicle number matched
                         return databaseClient.sql(sqlWithoutVehicleNoMatched.concat(VehicleNoKeywords.of(keywords).toSql())
                                         .formatted(
                                         PartNameKeywords.of(keywords).toSql(),
