@@ -18,7 +18,6 @@ public class SparePart {
     private LocalDate creationDate;
     private List<OEM> oems;
     private List<Truck> compatibleTrucks;
-    private Long[] supplierIds;
     @Transient
     private List<Long> orderIds;
 
@@ -76,14 +75,6 @@ public class SparePart {
 
     public void setCompatibleTrucks(List<Truck> compatibleTrucks) {
         this.compatibleTrucks = compatibleTrucks;
-    }
-
-    public Long[] getSupplierIds() {
-        return supplierIds;
-    }
-
-    public void setSupplierIds(Long[] supplierIds) {
-        this.supplierIds = supplierIds;
     }
 
     public List<Long> getOrderIds() {
