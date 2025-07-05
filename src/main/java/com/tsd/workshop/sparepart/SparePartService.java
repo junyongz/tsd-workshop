@@ -5,6 +5,7 @@ import com.tsd.workshop.sparepart.data.SparePart;
 import com.tsd.workshop.sparepart.data.SparePartRepository;
 import com.tsd.workshop.sparepart.media.data.SparePartMediaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,9 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class SparePartService {
+
+    private final Sort defaultSort = Sort.by(Sort.Order.desc("creationDate"),
+                Sort.Order.desc("id"));
     
     @Autowired
     private SparePartRepository sparePartRepository;
@@ -38,7 +42,15 @@ public class SparePartService {
     }
 
     public Flux<SparePart> findAll() {
-        return sparePartRepository.findAll(Sort.by(Sort.Order.desc("creationDate")));
+        return sparePartRepository.findAll(defaultSort);
+    }
+
+    public Flux<SparePart> findAll(int pageNumber, int pageSize) {
+        return sparePartRepository.findAllBy(PageRequest.of(pageNumber-1, pageSize, defaultSort));
+    }
+
+    public Mono<Long> totalSpareParts() {
+        return sparePartRepository.count();
     }
 
     @Transactional
