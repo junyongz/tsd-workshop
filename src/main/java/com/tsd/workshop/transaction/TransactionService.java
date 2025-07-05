@@ -44,7 +44,8 @@ public class TransactionService {
     private final Sort defaultSort = Sort.by(
             Sort.Order.desc("completionDate").nullsFirst(),
             Sort.Order.desc("creationDate"),
-            Sort.Order.desc("startDate"));
+            Sort.Order.desc("startDate"),
+            Sort.Order.desc("id"));
 
     public Mono<WorkshopService> findById(Long id) {
         return this.workshopServiceRepository.findById(id)
