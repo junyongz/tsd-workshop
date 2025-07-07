@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/spare-parts")
@@ -32,16 +33,27 @@ public class SparePartController {
     @GetMapping
     public Flux<SparePart> getAllSpareParts(
             @RequestParam(name="pageNumber", required = false, defaultValue = "0") int pageNumber,
-            @RequestParam(name="pageSize", required = false, defaultValue = "-1") int pageSize,
+            @RequestParam(name="pageSize", required = false, defaultValue = "0") int pageSize,
+            @RequestParam(name="keyword", required = false) List<String> keywords,
             ServerHttpResponse response
     ) {
-        if (pageNumber > 0 && pageSize >= 0) {
+        // whether to have pagination for keywords
+        if (keywords != null && !keywords.isEmpty()) {
+            return sparePartService.totalSpareParts(keywords)
+                            .flatMapMany(count -> {
+                                ResponsePaginationUtils.setHeaders(response.getHeaders(), count, pageNumber, pageSize);
+                                return sparePartService.findAll(keywords, pageNumber, pageSize);
+                            });
+        }
+
+        if (pageNumber > 0 && pageSize > 0) {
             return sparePartService.totalSpareParts()
                     .flatMapMany(count -> {
                         ResponsePaginationUtils.setHeaders(response.getHeaders(), count, pageNumber, pageSize);
                         return sparePartService.findAll(pageNumber, pageSize);
             });
         }
+
         return sparePartService.findAll();
     }
 
