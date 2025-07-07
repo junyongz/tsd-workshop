@@ -283,7 +283,6 @@ CREATE TABLE spare_part (
 	description varchar NULL,
 	oems json NULL,
 	compatible_trucks json NULL,
-	supplier_ids json NULL,
 	CONSTRAINT spare_part_pkey PRIMARY KEY (id)
 );
 

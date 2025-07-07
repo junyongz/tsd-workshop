@@ -2,7 +2,7 @@ create sequence mig_spare_part_seq;
 select setval('mig_spare_part_seq', (select max(id) from mig_spare_parts)) + 1;
 ALTER TABLE mig_spare_parts ALTER COLUMN id SET DEFAULT nextval('mig_spare_part_seq');
 
-select setval('spare_part_seq', 1) + 1;
+select setval('spare_part_seq', 1);
 create table spare_part (
 	id int8 primary key DEFAULT nextval('spare_part_seq'::regclass) NOT NULL,
 	creation_date date,
@@ -10,8 +10,7 @@ create table spare_part (
 	part_name varchar,
 	description varchar,
 	oems json,
-	compatible_trucks json,
-	supplier_ids json
+	compatible_trucks json
 )
 
 create sequence spare_part_media_seq;
