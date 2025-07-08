@@ -71,8 +71,8 @@ public class SparePartService {
     @Transactional
     public Mono<Void> deleteById(Long id) {
         return supplierSparePartR2dbcRepository.updateSparePartIdToNull(id)
-                        .then(sparePartRepository.deleteById(id))
-                        .then(sparePartMediaRepository.deleteBySparePartId(id));
+                        .then(sparePartMediaRepository.deleteBySparePartId(id))
+                        .then(sparePartRepository.deleteById(id));
     }
 
 }
