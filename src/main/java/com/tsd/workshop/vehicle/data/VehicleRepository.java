@@ -6,6 +6,7 @@ import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 @Transactional
@@ -19,4 +20,6 @@ public interface VehicleRepository extends R2dbcRepository<Vehicle, Long> {
     order by latest_mileage_km desc, plate_no desc
     """)
     Flux<Vehicle> findAllOfInternal(VehicleStatus vehicleStatus);
+
+    Mono<Vehicle> findByVehicleNo(String vehicleNo);
 }

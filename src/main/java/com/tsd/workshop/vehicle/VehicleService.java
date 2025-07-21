@@ -23,8 +23,16 @@ public class VehicleService {
     private FleetInfosService fleetInfosService;
 
     public Mono<Vehicle> saveVehicle(Vehicle vehicle) {
-        return vehicleRepository.save(vehicle)
-                .flatMap(veh -> vehicleRepository.findById(vehicle.getId()));
+        return vehicleRepository.findByVehicleNo(vehicle.getVehicleNo())
+                .flatMap(veh -> {
+                    if (!veh.getId().equals(vehicle.getId())) {
+                        throw new VehicleAlreadyExistsException(veh);
+                    }
+                    return Mono.just(vehicle);
+                })
+                .switchIfEmpty(Mono.just(vehicle))
+                .flatMap(veh -> vehicleRepository.save(veh)
+                        .flatMap(stored -> vehicleRepository.findById(vehicle.getId())));
     }
 
     public Mono<Vehicle> findById(Long id) {

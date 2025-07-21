@@ -20,7 +20,7 @@ public class TablesTransactionsR2dbcRepository {
                     union
                     select 'mig_supplier_spare_parts' as table_name, MAX(xmin::text::bigint) AS last_trx_id from mig_supplier_spare_parts
                     union
-                    select 'mig_spare_parts' as table_name, MAX(xmin::text::bigint) AS last_trx_id from mig_spare_parts
+                    select 'vehicle' as table_name, MAX(xmin::text::bigint) AS last_trx_id from vehicle
                     union
                     select 'spare_part_usages' as table_name, MAX(xmin::text::bigint) AS last_trx_id from spare_part_usages
                    """)
