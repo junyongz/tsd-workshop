@@ -12,12 +12,13 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 
 @Repository
-@Transactional(readOnly = true)
-public class MigDataJdbcRepository {
+@Transactional
+public class MigDataSqlRepository {
 
     @Autowired
     private DatabaseClient databaseClient;
 
+    @Transactional(readOnly = true)
     public Flux<Long> findServiceIdsByOrderId(Long orderId) {
         return databaseClient.sql("select index from mig_data where order_id = :orderId")
                 .bind(0, orderId)
@@ -25,7 +26,6 @@ public class MigDataJdbcRepository {
                 .all();
     }
 
-    @Transactional
     public Mono<Long> moveToDeletedTable(Long id) {
         return databaseClient.sql("insert into deleted_mig_data (select * from mig_data where index = :index)")
                 .bind(0, id)
@@ -60,4 +60,10 @@ public class MigDataJdbcRepository {
                 .next();
     }
 
+    public Mono<Long> nullifyServiceIdPostMigration(Long index) {
+        return databaseClient.sql("update mig_data set service_id = null where index = :index")
+                .bind(0, index)
+                .flatMap(Result::getRowsUpdated)
+                .singleOrEmpty();
+    }
 }

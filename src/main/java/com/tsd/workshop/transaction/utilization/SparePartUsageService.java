@@ -1,6 +1,7 @@
 package com.tsd.workshop.transaction.utilization;
 
 import com.tsd.workshop.migration.data.MigData;
+import com.tsd.workshop.migration.data.MigDataSqlRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartRepository;
@@ -37,6 +38,9 @@ public class SparePartUsageService {
 
     @Autowired
     private WorkshopServiceRepository workshopServiceRepository;
+
+    @Autowired
+    private MigDataSqlRepository migDataSqlRepository;
 
     @Transactional
     public Mono<SparePartUsage> saveSparePartUsage(SparePartUsage sparePartUsage) {
@@ -130,5 +134,16 @@ public class SparePartUsageService {
                                             }
                                             return true;
                                         })));
+    }
+
+    public Mono<SparePartUsage> migrateFromHandWritten(SparePartUsage sparePartUsage) {
+        if (sparePartUsage.getMigDataIndex() == null) {
+            throw new IllegalArgumentException("this routine is for migration from hand written part, but is empty");
+        }
+        return sparePartUsageRepository.save(sparePartUsage)
+                .flatMap(spu -> {
+                    return migDataSqlRepository.nullifyServiceIdPostMigration(spu.getMigDataIndex())
+                            .then(Mono.just(spu));
+                });
     }
 }

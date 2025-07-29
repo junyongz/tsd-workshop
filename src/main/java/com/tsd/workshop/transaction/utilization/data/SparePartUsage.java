@@ -2,6 +2,7 @@ package com.tsd.workshop.transaction.utilization.data;
 
 import com.tsd.workshop.transaction.data.WorkshopService;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.InsertOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -21,6 +22,8 @@ public class SparePartUsage {
     private BigDecimal quantity;
     private BigDecimal margin;
     private BigDecimal soldPrice;
+    @InsertOnlyProperty
+    private Long migDataIndex;
 
     // Default constructor
     public SparePartUsage() {}
@@ -96,6 +99,14 @@ public class SparePartUsage {
 
     public void setSoldPrice(BigDecimal soldPrice) {
         this.soldPrice = soldPrice;
+    }
+
+    public Long getMigDataIndex() {
+        return migDataIndex;
+    }
+
+    public void setMigDataIndex(Long migDataIndex) {
+        this.migDataIndex = migDataIndex;
     }
 
     // good to use for the first usage

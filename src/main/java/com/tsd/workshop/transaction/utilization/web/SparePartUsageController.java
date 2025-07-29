@@ -23,6 +23,9 @@ public class SparePartUsageController {
         if (sparePartUsage.getOrderId() == null) {
             throw new IllegalArgumentException("spare part usage must have orderId");
         }
+        if (sparePartUsage.getMigDataIndex() != null) {
+            return sparePartUsageService.migrateFromHandWritten(sparePartUsage);
+        }
         return sparePartUsageService.saveSparePartUsage(sparePartUsage);
     }
 

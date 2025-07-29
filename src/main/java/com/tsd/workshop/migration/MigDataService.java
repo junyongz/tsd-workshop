@@ -1,7 +1,7 @@
 package com.tsd.workshop.migration;
 
 import com.tsd.workshop.migration.data.MigData;
-import com.tsd.workshop.migration.data.MigDataJdbcRepository;
+import com.tsd.workshop.migration.data.MigDataSqlRepository;
 import com.tsd.workshop.migration.data.MigDataRepository;
 import com.tsd.workshop.transaction.utilization.SparePartUsageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class MigDataService {
     private MigDataRepository migDataRepository;
 
     @Autowired
-    private MigDataJdbcRepository migDataJdbcRepository;
+    private MigDataSqlRepository migDataSqlRepository;
 
     @Autowired
     private SparePartUsageService sparePartUsageService;
@@ -37,8 +37,8 @@ public class MigDataService {
     @Transactional
     public Mono<Long> deleteByOrderId(Long orderId) {
         // remove from spare_part_usage too
-        return migDataJdbcRepository.findServiceIdsByOrderId(orderId)
-                .flatMap(id ->  migDataJdbcRepository.moveToDeletedTable(id)
+        return migDataSqlRepository.findServiceIdsByOrderId(orderId)
+                .flatMap(id ->  migDataSqlRepository.moveToDeletedTable(id)
                         .flatMap(count -> sparePartUsageService.deleteByServiceId(id)
                                 .thenReturn(count))
                 ).reduce(Long::sum);
@@ -47,7 +47,7 @@ public class MigDataService {
     @Transactional
     public Mono<Long> deleteById(Long id) {
         // remove from spare_part_usage too
-        return migDataJdbcRepository.moveToDeletedTable(id)
+        return migDataSqlRepository.moveToDeletedTable(id)
                 .flatMap(count ->
                     sparePartUsageService.deleteByServiceId(id)
                             .thenReturn(count)
