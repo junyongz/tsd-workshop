@@ -1,7 +1,7 @@
 package com.tsd.workshop.transaction;
 
 /**
- * Either Repair, Service or Inspection
+ * Either Repair, Service, Inspection and/or Tyre
  */
 public enum TransactionType {
 
@@ -9,7 +9,9 @@ public enum TransactionType {
 
     SERVICE("Scheduled maintenance service, such as engine oil, filter"),
 
-    INSPECTION("General work for inspection purpose");
+    INSPECTION("General work for inspection purpose"),
+
+    TYRE("Change tyres");
 
     private final String description;
 
