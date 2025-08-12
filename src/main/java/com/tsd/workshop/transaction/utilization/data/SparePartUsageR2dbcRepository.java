@@ -16,7 +16,10 @@ public class SparePartUsageR2dbcRepository {
     private DatabaseClient databaseClient;
 
     public Mono<BigDecimal> usageByOrderId(Long orderId) {
-        return databaseClient.sql("select coalesce(sum(quantity), 0) total_quantity from spare_part_usages where order_id = :order_id")
+        return databaseClient.sql("""
+                select coalesce(sum(quantity), 0) total_quantity from spare_part_usages spu where order_id = :order_id
+                and (select delivery_order_no from mig_supplier_spare_parts where id = spu.order_id) not like 'PENDING-DO-%'
+                """)
                 .bind(0, orderId)
                 .map(row -> row.get("total_quantity", BigDecimal.class))
                 .first();

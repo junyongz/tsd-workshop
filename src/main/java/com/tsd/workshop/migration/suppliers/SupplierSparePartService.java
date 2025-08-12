@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -27,7 +28,19 @@ public class SupplierSparePartService {
     private SparePartUsageRepository sparePartUsageRepository;
 
     public Flux<SupplierSparePart> saveSupplierSpareParts(List<SupplierSparePart> supplierSpareParts) {
-        return supplierSparePartRepository.saveAll(supplierSpareParts);
+        if (StringUtils.hasText(supplierSpareParts.getFirst().getDeliveryOrderNo())) {
+            return supplierSparePartRepository.saveAll(supplierSpareParts);
+        }
+
+        return supplierSparePartRepository.saveAll(supplierSpareParts)
+                .collectList()
+                .flatMapMany(parts -> {
+                    Long firstId = parts.getFirst().getId();
+                    for (SupplierSparePart ssp : parts) {
+                        ssp.setDeliveryOrderNo("PENDING-DO-"+firstId);
+                    }
+                    return supplierSparePartRepository.saveAll(parts);
+                });
     }
 
     public Mono<SupplierSparePart> updateNotes(SupplierSparePart spp) {
