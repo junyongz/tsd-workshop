@@ -2,7 +2,7 @@ package com.tsd.workshop.migration.suppliers;
 
 import com.tsd.workshop.migration.suppliers.data.Status;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
-import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
+import com.tsd.workshop.migration.suppliers.data.SupplierSparePartSqlRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartRepository;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class SupplierSparePartService {
     private SupplierSparePartRepository supplierSparePartRepository;
 
     @Autowired
-    private SupplierSparePartR2dbcRepository supplierSparePartR2dbcRepository;
+    private SupplierSparePartSqlRepository supplierSparePartSqlRepository;
 
     @Autowired
     private SparePartUsageRepository sparePartUsageRepository;
@@ -44,7 +44,7 @@ public class SupplierSparePartService {
     }
 
     public Mono<SupplierSparePart> updateNotes(SupplierSparePart spp) {
-        return supplierSparePartR2dbcRepository.updateNotes(spp)
+        return supplierSparePartSqlRepository.updateNotes(spp)
                 .flatMap(count -> {
                     if (count == 0) {
                         throw new SupplierSparePartNotFoundException(spp);
@@ -54,7 +54,7 @@ public class SupplierSparePartService {
     }
 
     public Mono<SupplierSparePart> deplete(SupplierSparePart spp) {
-        return supplierSparePartR2dbcRepository.deplete(spp.getId())
+        return supplierSparePartSqlRepository.deplete(spp.getId())
                 .flatMap(count -> {
                     if (count == 0) {
                         throw new SupplierSparePartNotFoundException(spp);
@@ -80,7 +80,7 @@ public class SupplierSparePartService {
 
     @Transactional
     public Mono<Void> deleteById(Long id) {
-        return supplierSparePartR2dbcRepository.moveToDeletedTable(id)
+        return supplierSparePartSqlRepository.moveToDeletedTable(id)
                 .flatMap(count -> sparePartUsageRepository.deleteByOrderId(id));
     }
 }

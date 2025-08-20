@@ -3,7 +3,7 @@ package com.tsd.workshop.transaction.utilization;
 import com.tsd.workshop.migration.data.MigData;
 import com.tsd.workshop.migration.data.MigDataSqlRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePart;
-import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
+import com.tsd.workshop.migration.suppliers.data.SupplierSparePartSqlRepository;
 import com.tsd.workshop.migration.suppliers.data.SupplierSparePartRepository;
 import com.tsd.workshop.transaction.data.WorkshopService;
 import com.tsd.workshop.transaction.data.WorkshopServiceRepository;
@@ -34,7 +34,7 @@ public class SparePartUsageService {
     private SupplierSparePartRepository supplierSparePartRepository;
 
     @Autowired
-    private SupplierSparePartR2dbcRepository supplierSparePartR2dbcRepository;
+    private SupplierSparePartSqlRepository supplierSparePartSqlRepository;
 
     @Autowired
     private WorkshopServiceRepository workshopServiceRepository;
@@ -127,7 +127,7 @@ public class SparePartUsageService {
                 .flatMap(entry -> sparePartUsageR2dbcRepository.usageByOrderId(entry.getKey())
                         .map(sum -> sum.add(BigDecimal.valueOf(entry.getValue())))
                         .flatMap(quantity ->
-                                supplierSparePartR2dbcRepository.quantityById(entry.getKey())
+                                supplierSparePartSqlRepository.quantityById(entry.getKey())
                                         .map(orderQuantity -> {
                                             if (quantity.compareTo(orderQuantity) > 0) {
                                                 throw new QuantityOverflowException(quantity, orderQuantity);

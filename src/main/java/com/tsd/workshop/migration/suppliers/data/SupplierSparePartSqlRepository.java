@@ -14,7 +14,7 @@ import java.util.List;
 
 @Transactional(readOnly = true)
 @Repository
-public class SupplierSparePartR2dbcRepository {
+public class SupplierSparePartSqlRepository {
 
     @Autowired
     private DatabaseClient databaseClient;

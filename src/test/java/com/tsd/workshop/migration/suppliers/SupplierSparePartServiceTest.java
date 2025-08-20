@@ -1,6 +1,6 @@
 package com.tsd.workshop.migration.suppliers;
 
-import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
+import com.tsd.workshop.migration.suppliers.data.SupplierSparePartSqlRepository;
 import com.tsd.workshop.transaction.utilization.data.SparePartUsageRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -15,9 +15,9 @@ public class SupplierSparePartServiceTest {
     void deleteById() {
         SupplierSparePartService supplierSparePartService = new SupplierSparePartService();
 
-        SupplierSparePartR2dbcRepository supplierSparePartR2dbcRepository = mock(SupplierSparePartR2dbcRepository.class);
-        when(supplierSparePartR2dbcRepository.moveToDeletedTable(1000L)).thenReturn(Mono.just(1L));
-        ReflectionTestUtils.setField(supplierSparePartService, "supplierSparePartR2dbcRepository", supplierSparePartR2dbcRepository);
+        SupplierSparePartSqlRepository supplierSparePartSqlRepository = mock(SupplierSparePartSqlRepository.class);
+        when(supplierSparePartSqlRepository.moveToDeletedTable(1000L)).thenReturn(Mono.just(1L));
+        ReflectionTestUtils.setField(supplierSparePartService, "supplierSparePartSqlRepository", supplierSparePartSqlRepository);
 
         SparePartUsageRepository sparePartUsageRepository = mock(SparePartUsageRepository.class);
         when(sparePartUsageRepository.deleteByOrderId(1000L)).thenReturn(Mono.empty());

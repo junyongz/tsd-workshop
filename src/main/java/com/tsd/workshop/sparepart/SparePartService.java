@@ -1,6 +1,6 @@
 package com.tsd.workshop.sparepart;
 
-import com.tsd.workshop.migration.suppliers.data.SupplierSparePartR2dbcRepository;
+import com.tsd.workshop.migration.suppliers.data.SupplierSparePartSqlRepository;
 import com.tsd.workshop.sparepart.data.SparePart;
 import com.tsd.workshop.sparepart.data.SparePartRepository;
 import com.tsd.workshop.sparepart.data.SparePartSqlRepository;
@@ -31,13 +31,13 @@ public class SparePartService {
     private SparePartMediaRepository sparePartMediaRepository;
 
     @Autowired
-    private SupplierSparePartR2dbcRepository supplierSparePartR2dbcRepository;
+    private SupplierSparePartSqlRepository supplierSparePartSqlRepository;
 
     @Transactional
     public Mono<SparePart> saveSparePart(SparePart sparePart) {
         return sparePartRepository.save(sparePart)
                 .flatMap(sp ->
-                        sparePart.getOrderIds() != null && !sparePart.getOrderIds().isEmpty() ? supplierSparePartR2dbcRepository.updateWithSparePartId(sp.getId(), sp.getOrderIds())
+                        sparePart.getOrderIds() != null && !sparePart.getOrderIds().isEmpty() ? supplierSparePartSqlRepository.updateWithSparePartId(sp.getId(), sp.getOrderIds())
                             .then(Mono.just(sp)) : Mono.just(sp)
                 )
                 .flatMap(sp -> sparePartRepository.findById(sp.getId()));
@@ -70,7 +70,7 @@ public class SparePartService {
 
     @Transactional
     public Mono<Void> deleteById(Long id) {
-        return supplierSparePartR2dbcRepository.updateSparePartIdToNull(id)
+        return supplierSparePartSqlRepository.updateSparePartIdToNull(id)
                         .then(sparePartMediaRepository.deleteBySparePartId(id))
                         .then(sparePartRepository.deleteById(id));
     }
