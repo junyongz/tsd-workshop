@@ -22,8 +22,8 @@ public class TransactionStatsSqlRepository {
               count(*) filter (where 'SERVICE' = any(transaction_types)) as service_count,
               count(*) filter (where 'INSPECTION' = any(transaction_types)) as inspection_count,
               count(*) filter (where 'TYRE' = any(transaction_types)) as tyre_count,
-              count(*) filter (where completion_date is not null) as pending_count,
-              count(*) filter (where completion_date is null) as completion_count,
+              count(*) filter (where completion_date is null) as pending_count,
+              count(*) filter (where completion_date is not null) as completion_count,
               round(avg(duration)) average_completion_days
                 from (select *, (completion_date - start_date) duration,
                  (select sum(spu.quantity * spu.sold_price) from spare_part_usages spu

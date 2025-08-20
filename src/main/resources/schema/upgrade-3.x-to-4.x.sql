@@ -54,4 +54,4 @@ select (select company_name from company where id = veh.company_id) company_name
               from workshop_service ws) main
              inner join vehicle veh on main.vehicle_id  = veh.id
              group by start_date, veh.company_id
-             order by start_date)
+             order by start_date);
